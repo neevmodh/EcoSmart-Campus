@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Calculator - EcoSmart Campus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --probability-purple: #9370DB;
+            --probability-light: #E6E6FA;
+            --confidence-blue: #4169E1;
+            --warning: #FFA500;
+            --success: #32CD32;
+            --header-height: 80px;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--background) 0%, #f0f8f0 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .probability-dashboard {
+            padding: 2rem 0;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-title i {
+            color: var(--probability-purple);
+            font-size: 2.5rem;
+        }
+
+        .dashboard-title h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--probability-purple), #8A2BE2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(147, 112, 219, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(147, 112, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent-green), var(--secondary-green));
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--probability-purple);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--probability-light);
+        }
+
+        .card-header i {
+            color: var(--probability-purple);
+            font-size: 1.5rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Historical Data Analyzer */
+        .data-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            padding: 10px;
+            border: 2px solid var(--probability-light);
+            border-radius: 8px;
+            background: var(--background);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--probability-purple);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.1);
+        }
+
+        .probability-result {
+            background: var(--probability-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .probability-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--probability-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .probability-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Probability Simulator */
+        .simulator-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .confidence-interval {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .interval-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--confidence-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Pattern Analysis */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pattern-card {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid var(--probability-purple);
+        }
+
+        .pattern-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--probability-purple);
+            margin-bottom: 0.3rem;
+        }
+
+        .pattern-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Charts */
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Threshold Optimizer */
+        .threshold-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--probability-light);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--probability-purple);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .threshold-result {
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        /* Mathematical Notation */
+        .math-formula {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--probability-purple);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .data-controls,
+            .simulator-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .pattern-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pattern-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-calculator"></i>
+                    <h1>Probability Calculator</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="toolbox.html">Toolbox</a>
+                    <a href="probability.html" class="active">Probability</a>
+                </nav>
+                <div class="user-info">
+                    <div class="user-avatar">PC</div>
+                    <span>Analyst</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Probability Dashboard -->
+    <section class="probability-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Occupancy Probability Analysis</h2>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="btn btn-primary" onclick="runFullAnalysis()">
+                        <i class="fas fa-play"></i> Run Analysis
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportResults()">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-grid">
+                <!-- Historical Data Analyzer -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-database"></i>
+                        <h3>Historical Data Analyzer</h3>
+                    </div>
+                    <div class="math-formula">
+                        P<sub>r</sub>(t) = Hours Occupied / Total Observed Hours
+                    </div>
+                    <div class="data-controls">
+                        <div class="form-group">
+                            <label for="roomSelect">Select Room</label>
+                            <select class="form-control" id="roomSelect" onchange="calculateProbability()">
+                                <option value="room1">Science Building - Room 101</option>
+                                <option value="room2">Engineering Hall - Lab 3</option>
+                                <option value="room3">Main Library - Study Area</option>
+                                <option value="room4">Classroom Wing - Room 205</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeRange">Time Range</label>
+                            <select class="form-control" id="timeRange" onchange="calculateProbability()">
+                                <option value="week">Last Week</option>
+                                <option value="month">Last Month</option>
+                                <option value="quarter">Last Quarter</option>
+                                <option value="year">Last Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="probability-result">
+                        <div class="probability-value" id="probabilityValue">0.72</div>
+                        <div class="probability-label">Occupancy Probability</div>
+                    </div>
+                </div>
+
+                <!-- Probability Simulator -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-flask"></i>
+                        <h3>Probability Simulator</h3>
+                    </div>
+                    <div class="simulator-controls">
+                        <div class="form-group">
+                            <label for="scenarioType">Scenario Type</label>
+                            <select class="form-control" id="scenarioType" onchange="runSimulation()">
+                                <option value="normal">Normal Conditions</option>
+                                <option value="exam">Exam Period</option>
+                                <option value="holiday">Holiday Season</option>
+                                <option value="event">Special Event</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="confidenceLevel">Confidence Level</label>
+                            <select class="form-control" id="confidenceLevel" onchange="runSimulation()">
+                                <option value="0.90">90%</option>
+                                <option value="0.95">95%</option>
+                                <option value="0.99">99%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="simulationChart"></canvas>
+                    </div>
+                    <div class="confidence-interval">
+                        <div class="interval-value" id="confidenceInterval">[0.68, 0.76]</div>
+                        <div class="probability-label">95% Confidence Interval</div>
+                    </div>
+                </div>
+
+                <!-- Pattern Analysis -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-wave-square"></i>
+                        <h3>Pattern Analysis</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="patternChart"></canvas>
+                    </div>
+                    <div class="pattern-grid">
+                        <div class="pattern-card">
+                            <div class="pattern-value">+15%</div>
+                            <div class="pattern-label">Morning Peak</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-value">-8%</div>
+                            <div class="pattern-label">Weekend Drop</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-value">+22%</div>
+                            <div class="pattern-label">Exam Season</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-value">0.89</div>
+                            <div class="pattern-label">R² Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threshold Optimizer -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-sliders-h"></i>
+                        <h3>Threshold Optimizer</h3>
+                    </div>
+                    <div class="threshold-controls">
+                        <div class="form-group">
+                            <label for="currentThreshold">Current Threshold (θ): <span id="thresholdValue">0.65</span></label>
+                            <div class="slider-container">
+                                <input type="range" min="0.1" max="0.9" step="0.05" value="0.65" class="slider" id="currentThreshold" oninput="updateThreshold()">
+                                <span id="thresholdDisplay">0.65</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Optimization Goal</label>
+                            <select class="form-control" id="optimizationGoal" onchange="optimizeThreshold()">
+                                <option value="energy">Energy Efficiency</option>
+                                <option value="comfort">Occupant Comfort</option>
+                                <option value="balanced">Balanced Approach</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="thresholdChart"></canvas>
+                    </div>
+                    <div class="threshold-result" id="optimalThreshold" style="display: none;">
+                        <strong>Optimal Threshold Found: θ = 0.72</strong>
+                        <br>
+                        <small>Expected energy savings: 18% with 94% comfort level</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Chart instances
+        let simulationChart, patternChart, thresholdChart;
+
+        // Initialize the probability calculator
+        function initProbabilityCalculator() {
+            initializeCharts();
+            calculateProbability();
+            runSimulation();
+            optimizeThreshold();
+        }
+
+        // Initialize all charts
+        function initializeCharts() {
+            // Simulation Chart
+            const simCtx = document.getElementById('simulationChart').getContext('2d');
+            simulationChart = new Chart(simCtx, {
+                type: 'line',
+                data: {
+                    labels: ['8:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+                    datasets: [{
+                        label: 'Predicted Occupancy',
+                        data: [0.45, 0.72, 0.68, 0.75, 0.82, 0.65, 0.35],
+                        borderColor: '#9370DB',
+                        backgroundColor: 'rgba(147, 112, 219, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Occupancy Simulation',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 1,
+                            title: {
+                                display: true,
+                                text: 'Occupancy Probability'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pattern Chart
+            const patternCtx = document.getElementById('patternChart').getContext('2d');
+            patternChart = new Chart(patternCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Weekly Pattern',
+                        data: [0.75, 0.82, 0.78, 0.85, 0.72, 0.35, 0.25],
+                        backgroundColor: 'rgba(147, 112, 219, 0.7)',
+                        borderColor: '#9370DB',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weekly Occupancy Pattern',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 1,
+                            title: {
+                                display: true,
+                                text: 'Occupancy Probability'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Threshold Chart
+            const thresholdCtx = document.getElementById('thresholdChart').getContext('2d');
+            thresholdChart = new Chart(thresholdCtx, {
+                type: 'line',
+                data: {
+                    labels: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+                    datasets: [
+                        {
+                            label: 'Energy Savings',
+                            data: [15, 28, 42, 55, 65, 72, 68],
+                            borderColor: '#32CD32',
+                            backgroundColor: 'rgba(50, 205, 50, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Comfort Level',
+                            data: [45, 58, 72, 85, 94, 88, 76],
+                            borderColor: '#4169E1',
+                            backgroundColor: 'rgba(65, 105, 225, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Threshold Optimization Analysis',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Threshold Value (θ)'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Energy Savings (%)'
+                            },
+                            min: 0,
+                            max: 100
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Comfort Level (%)'
+                            },
+                            min: 0,
+                            max: 100,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calculate probability based on inputs
+        function calculateProbability() {
+            const room = document.getElementById('roomSelect').value;
+            const timeRange = document.getElementById('timeRange').value;
+            
+            // Simulate different probabilities based on inputs
+            const probabilities = {
+                'room1': { 'week': 0.72, 'month': 0.68, 'quarter': 0.65, 'year': 0.63 },
+                'room2': { 'week': 0.58, 'month': 0.55, 'quarter': 0.52, 'year': 0.50 },
+                'room3': { 'week': 0.82, 'month': 0.78, 'quarter': 0.75, 'year': 0.72 },
+                'room4': { 'week': 0.65, 'month': 0.62, 'quarter': 0.60, 'year': 0.58 }
+            };
+            
+            const probability = probabilities[room][timeRange];
+            document.getElementById('probabilityValue').textContent = probability.toFixed(2);
+            
+            // Update simulation with new probability
+            runSimulation();
+        }
+
+        // Run probability simulation
+        function runSimulation() {
+            const scenario = document.getElementById('scenarioType').value;
+            const confidence = parseFloat(document.getElementById('confidenceLevel').value);
+            
+            // Simulate different scenarios
+            const scenarioData = {
+                'normal': [0.45, 0.72, 0.68, 0.75, 0.82, 0.65, 0.35],
+                'exam': [0.65, 0.88, 0.82, 0.90, 0.95, 0.85, 0.55],
+                'holiday': [0.15, 0.25, 0.20, 0.22, 0.18, 0.12, 0.08],
+                'event': [0.35, 0.45, 0.82, 0.75, 0.68, 0.72, 0.40]
+            };
+            
+            // Update simulation chart
+            simulationChart.data.datasets[0].data = scenarioData[scenario];
+            simulationChart.update();
+            
+            // Calculate confidence interval
+            const baseProbability = parseFloat(document.getElementById('probabilityValue').textContent);
+            const margin = (1 - confidence) / 2;
+            const lower = Math.max(0, baseProbability - margin).toFixed(2);
+            const upper = Math.min(1, baseProbability + margin).toFixed(2);
+            
+            document.getElementById('confidenceInterval').textContent = `[${lower}, ${upper}]`;
+        }
+
+        // Update threshold value
+        function updateThreshold() {
+            const threshold = document.getElementById('currentThreshold').value;
+            document.getElementById('thresholdValue').textContent = threshold;
+            document.getElementById('thresholdDisplay').textContent = threshold;
+        }
+
+        // Optimize threshold
+        function optimizeThreshold() {
+            const goal = document.getElementById('optimizationGoal').value;
+            
+            // Simulate optimization process
+            setTimeout(() => {
+                const optimalResult = document.getElementById('optimalThreshold');
+                optimalResult.style.display = 'block';
+                
+                // Update with goal-specific result
+                const results = {
+                    'energy': { threshold: '0.78', savings: '22%', comfort: '88%' },
+                    'comfort': { threshold: '0.58', savings: '12%', comfort: '96%' },
+                    'balanced': { threshold: '0.72', savings: '18%', comfort: '94%' }
+                };
+                
+                const result = results[goal];
+                optimalResult.innerHTML = `
+                    <strong>Optimal Threshold Found: θ = ${result.threshold}</strong>
+                    <br>
+                    <small>Expected energy savings: ${result.savings} with ${result.comfort} comfort level</small>
+                `;
+            }, 1000);
+        }
+
+        // Run full analysis
+        function runFullAnalysis() {
+            // Show loading state
+            const button = document.querySelector('.btn-primary');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            button.disabled = true;
+            
+            // Simulate analysis process
+            setTimeout(() => {
+                calculateProbability();
+                runSimulation();
+                optimizeThreshold();
+                
+                // Restore button
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // Update all charts with new data
+                simulationChart.update();
+                patternChart.update();
+                thresholdChart.update();
+            }, 2000);
+        }
+
+        // Export results
+        function exportResults() {
+            // Simple export simulation
+            const data = {
+                probability: document.getElementById('probabilityValue').textContent,
+                confidence: document.getElementById('confidenceInterval').textContent,
+                timestamp: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            // For demo purposes, just show success message
+            alert('Probability data exported successfully!');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initProbabilityCalculator);
+    </script>
+</body>
+</html>

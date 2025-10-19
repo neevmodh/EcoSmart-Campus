@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSmart Campus - Settings & Configuration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --leaf-green: #228B22;
+            --mint: #98FB98;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-signup {
+            background: white;
+            color: var(--primary-green);
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-signup:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 2rem 0;
+            background: linear-gradient(rgba(248, 255, 248, 0.9), rgba(248, 255, 248, 0.9)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.05"><path d="M50,10 C70,10 90,25 90,50 C90,75 70,90 50,90 C30,90 10,75 10,50 C10,25 30,10 50,10 Z" fill="%23228B22"/></svg>');
+            background-size: 200px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .page-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-green);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .page-description {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: var(--text-dark);
+        }
+
+        /* Settings Layout */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .settings-sidebar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .settings-nav {
+            list-style: none;
+        }
+
+        .settings-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .settings-nav a:hover, .settings-nav a.active {
+            background-color: var(--accent-green);
+            color: var(--primary-green);
+        }
+
+        .settings-nav i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+        }
+
+        .settings-section {
+            margin-bottom: 2.5rem;
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-green);
+            border-radius: 2px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* User Management */
+        .users-list {
+            margin-top: 1.5rem;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        .user-details h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            background: var(--secondary-green);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-green);
+        }
+
+        .btn-action.delete {
+            background: #FF6B6B;
+        }
+
+        .btn-action.delete:hover {
+            background: #DC143C;
+        }
+
+        /* Threshold Configuration */
+        .threshold-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .threshold-card {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--secondary-green);
+        }
+
+        .threshold-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .threshold-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+        }
+
+        .threshold-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin: 0.5rem 0;
+        }
+
+        .threshold-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        /* Mathematical Concepts */
+        .math-concepts {
+            margin: 3rem 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+        }
+
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .concept-card {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--secondary-green);
+        }
+
+        .concept-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+        }
+
+        .concept-icon {
+            color: var(--primary-green);
+        }
+
+        .formula {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            border: 1px solid #eee;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-green);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #DC143C;
+        }
+
+        .notification.warning {
+            background: #FFA500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-sidebar {
+                position: static;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>EcoSmart Campus</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="toolbox.html">Toolbox</a>
+                    <a href="settings.html" class="active">Settings</a>
+                </nav>
+                <div class="auth-buttons">
+                    <button class="btn btn-login">Login</button>
+                    <button class="btn btn-signup">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Settings & Configuration</h1>
+            <p class="page-description">
+                Manage system-wide settings, user permissions, thresholds, and integrations. Configure mathematical parameters for optimal energy optimization.
+            </p>
+        </div>
+    </section>
+
+    <!-- Settings Layout -->
+    <section class="container">
+        <div class="settings-layout">
+            <!-- Settings Sidebar -->
+            <div class="settings-sidebar">
+                <ul class="settings-nav">
+                    <li><a href="#user-management" class="active" data-section="user-management"><i class="fas fa-users"></i> User Management</a></li>
+                    <li><a href="#system-preferences" data-section="system-preferences"><i class="fas fa-cog"></i> System Preferences</a></li>
+                    <li><a href="#threshold-config" data-section="threshold-config"><i class="fas fa-sliders-h"></i> Threshold Configuration</a></li>
+                    <li><a href="#integrations" data-section="integrations"><i class="fas fa-plug"></i> Integration Settings</a></li>
+                    <li><a href="#backup" data-section="backup"><i class="fas fa-database"></i> Backup & Restore</a></li>
+                </ul>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- User Management Section -->
+                <div class="settings-section active" id="user-management-section">
+                    <h2 class="section-title">User Management</h2>
+                    <p>Manage user roles, permissions, and access controls for the EcoSmart Campus system.</p>
+                    
+                    <div class="form-group">
+                        <label for="new-user-email">Add New User</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="email" id="new-user-email" class="form-control" placeholder="Enter email address">
+                            <select id="new-user-role" class="form-control" style="width: 200px;">
+                                <option value="viewer">Viewer</option>
+                                <option value="operator">Operator</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                            <button class="btn-action" id="add-user">Add User</button>
+                        </div>
+                    </div>
+                    
+                    <div class="users-list">
+                        <h3 style="margin-bottom: 1rem;">Current Users</h3>
+                        
+                        <div class="user-card">
+                            <div class="user-info">
+                                <div class="user-avatar">JD</div>
+                                <div class="user-details">
+                                    <h4>John Doe</h4>
+                                    <p>john.doe@ecosmart.edu • Administrator</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action delete">Remove</button>
+                            </div>
+                        </div>
+                        
+                        <div class="user-card">
+                            <div class="user-info">
+                                <div class="user-avatar">SJ</div>
+                                <div class="user-details">
+                                    <h4>Sarah Johnson</h4>
+                                    <p>s.johnson@ecosmart.edu • Operator</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action delete">Remove</button>
+                            </div>
+                        </div>
+                        
+                        <div class="user-card">
+                            <div class="user-info">
+                                <div class="user-avatar">MW</div>
+                                <div class="user-details">
+                                    <h4>Michael Wilson</h4>
+                                    <p>m.wilson@ecosmart.edu • Viewer</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action delete">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Preferences Section -->
+                <div class="settings-section" id="system-preferences-section">
+                    <h2 class="section-title">System Preferences</h2>
+                    <p>Configure global system settings and preferences.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="timezone">Time Zone</label>
+                            <select id="timezone" class="form-control">
+                                <option value="est">Eastern Time (ET)</option>
+                                <option value="cst">Central Time (CT)</option>
+                                <option value="mst">Mountain Time (MT)</option>
+                                <option value="pst" selected>Pacific Time (PT)</option>
+                                <option value="utc">UTC</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="units">Measurement Units</label>
+                            <select id="units" class="form-control">
+                                <option value="imperial">Imperial (Fahrenheit, Feet)</option>
+                                <option value="metric" selected>Metric (Celsius, Meters)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="data-retention">Data Retention Period</label>
+                        <select id="data-retention" class="form-control">
+                            <option value="30">30 days</option>
+                            <option value="90" selected>90 days</option>
+                            <option value="180">180 days</option>
+                            <option value="365">1 year</option>
+                            <option value="forever">Indefinitely</option>
+                        </select>
+                        <div class="form-help">How long to keep historical data before automatic deletion</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="auto-updates" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                            Enable Automatic Updates
+                        </label>
+                        <div class="form-help">Automatically install security and feature updates</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="email-alerts" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                            Enable Email Alerts
+                        </label>
+                        <div class="form-help">Receive email notifications for system alerts and reports</div>
+                    </div>
+                    
+                    <button class="btn-action" style="margin-top: 1rem;" id="save-preferences">Save Preferences</button>
+                </div>
+
+                <!-- Threshold Configuration Section -->
+                <div class="settings-section" id="threshold-config-section">
+                    <h2 class="section-title">Threshold Configuration</h2>
+                    <p>Configure mathematical thresholds for optimal energy optimization and automation.</p>
+                    
+                    <div class="threshold-controls">
+                        <div class="threshold-card">
+                            <div class="threshold-header">
+                                <div class="threshold-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3>Occupancy Threshold (θ)</h3>
+                            </div>
+                            <p>Probability threshold for room occupancy detection</p>
+                            <div class="threshold-value" id="occupancy-value">0.65</div>
+                            <input type="range" min="0" max="1" step="0.05" value="0.65" class="threshold-slider" id="occupancy-slider">
+                            <div class="form-help">P(occupancy) ≥ θ triggers device activation</div>
+                        </div>
+                        
+                        <div class="threshold-card">
+                            <div class="threshold-header">
+                                <div class="threshold-icon">
+                                    <i class="fas fa-fan"></i>
+                                </div>
+                                <h3>Fan Activation (T<sub>fan</sub>)</h3>
+                            </div>
+                            <p>Temperature threshold for fan activation</p>
+                            <div class="threshold-value" id="fan-value">24°C</div>
+                            <input type="range" min="18" max="30" step="0.5" value="24" class="threshold-slider" id="fan-slider">
+                            <div class="form-help">T ≥ T<sub>fan</sub> triggers fan activation</div>
+                        </div>
+                        
+                        <div class="threshold-card">
+                            <div class="threshold-header">
+                                <div class="threshold-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <h3>AC Activation (T<sub>ac</sub>)</h3>
+                            </div>
+                            <p>Temperature threshold for AC activation</p>
+                            <div class="threshold-value" id="ac-value">26°C</div>
+                            <input type="range" min="20" max="35" step="0.5" value="26" class="threshold-slider" id="ac-slider">
+                            <div class="form-help">T ≥ T<sub>ac</sub> triggers AC activation</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <h3>Boolean Logic Conditions</h3>
+                        <p>Define automation rules using Boolean logic expressions</p>
+                        
+                        <div class="form-group">
+                            <label for="lighting-rule">Lighting Automation Rule</label>
+                            <input type="text" id="lighting-rule" class="form-control" value="O_r(t) ∧ (L_r(t) < L_min ∨ T_r(t) < T_comfort)">
+                            <div class="form-help">Lights activate when room is occupied AND (light level is below minimum OR temperature is below comfort level)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ac-rule">AC Automation Rule</label>
+                            <input type="text" id="ac-rule" class="form-control" value="O_r(t) ∧ T_r(t) > T_ac">
+                            <div class="form-help">AC activates when room is occupied AND temperature exceeds AC threshold</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-action" style="margin-top: 1rem;" id="save-thresholds">Save Thresholds</button>
+                </div>
+
+                <!-- Integration Settings Section -->
+                <div class="settings-section" id="integrations-section">
+                    <h2 class="section-title">Integration Settings</h2>
+                    <p>Configure API endpoints and external system integrations.</p>
+                    
+                    <div class="form-group">
+                        <label for="weather-api">Weather API Endpoint</label>
+                        <input type="text" id="weather-api" class="form-control" value="https://api.weather.com/v3/energy/forecast">
+                        <div class="form-help">Endpoint for weather data used in energy forecasting</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="utility-api">Utility API Endpoint</label>
+                        <input type="text" id="utility-api" class="form-control" value="https://api.utility.com/v1/consumption">
+                        <div class="form-help">Endpoint for utility consumption data</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="building-api">Building Management API</label>
+                        <input type="text" id="building-api" class="form-control" value="https://api.bms.ecosmart.edu/v2/devices">
+                        <div class="form-help">Endpoint for building management system integration</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="api-sync" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                            Enable Real-time API Synchronization
+                        </label>
+                        <div class="form-help">Synchronize data with external systems in real-time</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sync-frequency">Synchronization Frequency</label>
+                        <select id="sync-frequency" class="form-control">
+                            <option value="5">5 minutes</option>
+                            <option value="15" selected>15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="60">1 hour</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-action" style="margin-top: 1rem;" id="test-integrations">Test Integrations</button>
+                    <button class="btn-action" id="save-integrations">Save Integration Settings</button>
+                </div>
+
+                <!-- Backup & Restore Section -->
+                <div class="settings-section" id="backup-section">
+                    <h2 class="section-title">Backup & Restore</h2>
+                    <p>Manage system backups and restore points.</p>
+                    
+                    <div class="form-group">
+                        <label for="backup-frequency">Automatic Backup Frequency</label>
+                        <select id="backup-frequency" class="form-control">
+                            <option value="daily">Daily</option>
+                            <option value="weekly" selected>Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="cloud-backup" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                            Enable Cloud Backup
+                        </label>
+                        <div class="form-help">Automatically upload backups to secure cloud storage</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>Manual Backup</h3>
+                        <p>Create a manual backup of system configuration and data</p>
+                        <button class="btn-action" id="create-backup">Create Backup Now</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>Restore System</h3>
+                        <p>Restore system from a previous backup</p>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select id="restore-point" class="form-control">
+                                <option value="backup-2023-10-15">Backup - October 15, 2023</option>
+                                <option value="backup-2023-10-08">Backup - October 8, 2023</option>
+                                <option value="backup-2023-10-01">Backup - October 1, 2023</option>
+                            </select>
+                            <button class="btn-action" id="restore-backup">Restore</button>
+                        </div>
+                        <div class="form-help" style="color: #DC143C; margin-top: 0.5rem;">Warning: Restoring will overwrite current system configuration</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mathematical Concepts Section -->
+    <section class="container math-concepts">
+        <h2 class="section-title">Mathematical Foundation</h2>
+        <p>Our threshold configuration is built on proven mathematical concepts that form the intelligence behind energy optimization.</p>
+        <div class="concepts-grid">
+            <div class="concept-card">
+                <h4><i class="fas fa-chart-line concept-icon"></i> Probability Thresholds</h4>
+                <p>Occupancy detection uses probability thresholds to optimize device activation:</p>
+                <div class="formula">Device_r(t) = {1 if P(occupancy_r(t)) ≥ θ, 0 otherwise}</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-code-branch concept-icon"></i> Boolean Logic</h4>
+                <p>Automation rules use Boolean expressions for device control:</p>
+                <div class="formula">AC_r(t) = O_r(t) ∧ (T_r(t) > T_ac)</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-thermometer-half concept-icon"></i> Temperature Logic</h4>
+                <p>HVAC systems activate based on temperature thresholds:</p>
+                <div class="formula">Fan_r(t) = O_r(t) ∧ (T_fan ≤ T_r(t) < T_ac)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EcoSmart Campus</h3>
+                    <p>Transforming campus energy management through mathematical optimization and sustainable practices.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="analytics.html">Analytics</a></li>
+                        <li><a href="devices.html">Device Control</a></li>
+                        <li><a href="reports.html">Reports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Mathematical Tools</h3>
+                    <ul class="footer-links">
+                        <li><a href="campus-layout.html">Graph Theory</a></li>
+                        <li><a href="analytics.html">Probability Calculator</a></li>
+                        <li><a href="schedules.html">Boolean Logic Editor</a></li>
+                        <li><a href="analytics.html">Recurrence Relations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@ecosmart.edu</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +1 (555) 123-4567</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> Campus Energy Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 EcoSmart Campus Energy Optimization System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-text">Settings saved successfully!</span>
+    </div>
+
+    <script>
+        // Navigation function
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = 'notification';
+            
+            if (type !== 'success') {
+                notification.classList.add(type);
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Settings navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Settings navigation
+            const navLinks = document.querySelectorAll('.settings-nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    const sections = document.querySelectorAll('.settings-section');
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // Show target section
+                    const targetSection = this.getAttribute('data-section');
+                    document.getElementById(`${targetSection}-section`).classList.add('active');
+                });
+            });
+
+            // Threshold sliders
+            const occupancySlider = document.getElementById('occupancy-slider');
+            const occupancyValue = document.getElementById('occupancy-value');
+            
+            occupancySlider.addEventListener('input', function() {
+                occupancyValue.textContent = this.value;
+            });
+            
+            const fanSlider = document.getElementById('fan-slider');
+            const fanValue = document.getElementById('fan-value');
+            
+            fanSlider.addEventListener('input', function() {
+                fanValue.textContent = `${this.value}°C`;
+            });
+            
+            const acSlider = document.getElementById('ac-slider');
+            const acValue = document.getElementById('ac-value');
+            
+            acSlider.addEventListener('input', function() {
+                acValue.textContent = `${this.value}°C`;
+            });
+
+            // Add user button
+            document.getElementById('add-user').addEventListener('click', function() {
+                const email = document.getElementById('new-user-email').value;
+                const role = document.getElementById('new-user-role').value;
+                
+                if (email) {
+                    showNotification(`User ${email} added with ${role} role`);
+                    document.getElementById('new-user-email').value = '';
+                } else {
+                    showNotification('Please enter an email address', 'error');
+                }
+            });
+
+            // Save buttons
+            document.getElementById('save-preferences').addEventListener('click', function() {
+                showNotification('System preferences saved successfully');
+            });
+            
+            document.getElementById('save-thresholds').addEventListener('click', function() {
+                showNotification('Threshold configuration saved successfully');
+            });
+            
+            document.getElementById('save-integrations').addEventListener('click', function() {
+                showNotification('Integration settings saved successfully');
+            });
+
+            // Test integrations button
+            document.getElementById('test-integrations').addEventListener('click', function() {
+                showNotification('Testing API integrations...');
+                setTimeout(() => {
+                    showNotification('All integrations tested successfully');
+                }, 2000);
+            });
+
+            // Backup buttons
+            document.getElementById('create-backup').addEventListener('click', function() {
+                showNotification('Creating system backup...');
+                setTimeout(() => {
+                    showNotification('Backup created successfully');
+                }, 2000);
+            });
+            
+            document.getElementById('restore-backup').addEventListener('click', function() {
+                const backup = document.getElementById('restore-point').value;
+                if (confirm(`Are you sure you want to restore from ${backup}? This will overwrite current settings.`)) {
+                    showNotification('Restoring system from backup...');
+                    setTimeout(() => {
+                        showNotification('System restored successfully');
+                    }, 2000);
+                }
+            });
+
+            // User action buttons
+            const userActionButtons = document.querySelectorAll('.user-actions .btn-action');
+            userActionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('delete')) {
+                        if (confirm('Are you sure you want to remove this user?')) {
+                            showNotification('User removed successfully');
+                        }
+                    } else {
+                        showNotification('Opening user editor...');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

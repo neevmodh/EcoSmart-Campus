@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EcoSmart Campus Energy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --leaf-green: #228B22;
+            --mint: #98FB98;
+            --warning: #FFA500;
+            --danger: #DC143C;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            padding: 2rem 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-title i {
+            color: var(--primary-green);
+            font-size: 2rem;
+        }
+
+        .dashboard-title h2 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--accent-green);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .filter-btn:hover {
+            background: var(--accent-green);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: auto;
+            gap: 1.5rem;
+            grid-template-areas: 
+                "consumption consumption consumption alerts"
+                "savings savings occupancy occupancy"
+                "devices devices devices devices";
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-areas: 
+                    "consumption consumption"
+                    "savings alerts"
+                    "occupancy occupancy"
+                    "devices devices";
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "consumption"
+                    "savings"
+                    "alerts"
+                    "occupancy"
+                    "devices";
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .card-title i {
+            color: var(--primary-green);
+        }
+
+        /* Consumption Chart */
+        .consumption-card {
+            grid-area: consumption;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Savings Metrics */
+        .savings-card {
+            grid-area: savings;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .savings-metric {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--background);
+        }
+
+        .savings-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .savings-positive {
+            color: var(--leaf-green);
+        }
+
+        .savings-negative {
+            color: var(--danger);
+        }
+
+        .savings-label {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .savings-trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Alerts Panel */
+        .alerts-card {
+            grid-area: alerts;
+        }
+
+        .alert-list {
+            list-style: none;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        .alert-item:hover {
+            background: var(--background);
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .alert-warning .alert-icon {
+            background: var(--warning);
+        }
+
+        .alert-danger .alert-icon {
+            background: var(--danger);
+        }
+
+        .alert-info .alert-icon {
+            background: var(--primary-green);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .alert-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .alert-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* Occupancy Heat Map */
+        .occupancy-card {
+            grid-area: occupancy;
+        }
+
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            margin-top: 1rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+        }
+
+        .occupancy-low {
+            background: var(--mint);
+        }
+
+        .occupancy-medium {
+            background: var(--accent-green);
+        }
+
+        .occupancy-high {
+            background: var(--secondary-green);
+        }
+
+        .occupancy-very-high {
+            background: var(--primary-green);
+        }
+
+        .heatmap-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        /* Device Status Grid */
+        .devices-card {
+            grid-area: devices;
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .device-card {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid var(--accent-green);
+            transition: all 0.3s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.1);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .device-name {
+            font-weight: 600;
+        }
+
+        .device-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-on {
+            background: var(--leaf-green);
+            box-shadow: 0 0 5px var(--leaf-green);
+        }
+
+        .status-off {
+            background: #ccc;
+        }
+
+        .status-warning {
+            background: var(--warning);
+            box-shadow: 0 0 5px var(--warning);
+        }
+
+        .device-location {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .device-power {
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Mathematical Notation */
+        .math-notation {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--primary-green);
+        }
+
+        .math-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .savings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .heatmap-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>EcoSmart Campus</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="dashboard.html" class="active">Dashboard</a>
+                    <a href="campus-layout.html">Campus Layout</a>
+                    <a href="analytics.html">Analytics</a>
+                    <a href="devices.html">Devices</a>
+                     <a href="toolbox.html">Toolbox</a>
+                    <a href="reports.html">Reports</a>
+                </nav>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <span>John Doe</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard -->
+    <section class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h2>Energy Optimization Dashboard</h2>
+                </div>
+                <div class="time-filter">
+                    <button class="filter-btn active">Today</button>
+                    <button class="filter-btn">Week</button>
+                    <button class="filter-btn">Month</button>
+                    <button class="filter-btn">Year</button>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Energy Consumption Card -->
+                <div class="card consumption-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-bolt"></i>
+                            <h3>Energy Consumption</h3>
+                        </div>
+                        <div class="card-actions">
+                            <span class="math-notation">∑f(r,t) = Total Consumption</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="consumptionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Savings Metrics Card -->
+                <div class="card savings-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-piggy-bank"></i>
+                            <h3>Savings Metrics</h3>
+                        </div>
+                    </div>
+                    <div class="savings-grid">
+                        <div class="savings-metric">
+                            <div class="savings-value savings-positive">$186</div>
+                            <div class="savings-label">Today's Savings</div>
+                            <div class="savings-trend">
+                                <i class="fas fa-arrow-up"></i> 8.2% vs target
+                            </div>
+                        </div>
+                        <div class="savings-metric">
+                            <div class="savings-value savings-positive">$4,250</div>
+                            <div class="savings-label">Monthly Savings</div>
+                            <div class="savings-trend">
+                                <i class="fas fa-arrow-up"></i> 12.5% vs last month
+                            </div>
+                        </div>
+                        <div class="savings-metric">
+                            <div class="savings-value savings-positive">1,247 kWh</div>
+                            <div class="savings-label">Energy Saved</div>
+                            <div class="savings-trend">
+                                <i class="fas fa-arrow-down"></i> 15.3% reduction
+                            </div>
+                        </div>
+                        <div class="savings-metric">
+                            <div class="savings-value savings-positive">2.4 t</div>
+                            <div class="savings-label">CO₂ Reduction</div>
+                            <div class="savings-trend">
+                                <i class="fas fa-leaf"></i> 40 trees equivalent
+                            </div>
+                        </div>
+                    </div>
+                    <div class="math-notation">
+                        <div class="math-title">Recurrence Relation Model</div>
+                        E<sub>n</sub> = E<sub>n-1</sub> + U<sub>n</sub> - S<sub>n</sub><br>
+                        Where E<sub>n</sub> = Energy today, E<sub>n-1</sub> = Energy yesterday<br>
+                        U<sub>n</sub> = Usage today, S<sub>n</sub> = Savings today
+                    </div>
+                </div>
+
+                <!-- Alerts Panel -->
+                <div class="card alerts-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Alerts & Recommendations</h3>
+                        </div>
+                    </div>
+                    <ul class="alert-list">
+                        <li class="alert-item alert-warning">
+                            <div class="alert-icon">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-title">High AC Usage in Library</div>
+                                <div class="alert-desc">Temperature setpoint too low during off-peak hours</div>
+                            </div>
+                            <div class="alert-time">2 hrs ago</div>
+                        </li>
+                        <li class="alert-item alert-info">
+                            <div class="alert-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-title">Lights ON in Empty Classrooms</div>
+                                <div class="alert-desc">3 classrooms detected with lights on but no occupancy</div>
+                            </div>
+                            <div class="alert-time">4 hrs ago</div>
+                        </li>
+                        <li class="alert-item alert-danger">
+                            <div class="alert-icon">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-title">Power Anomaly Detected</div>
+                                <div class="alert-desc">Unexpected power surge in Science Building</div>
+                            </div>
+                            <div class="alert-time">6 hrs ago</div>
+                        </li>
+                        <li class="alert-item alert-info">
+                            <div class="alert-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-title">Optimization Opportunity</div>
+                                <div class="alert-desc">Schedule adjustment could save additional 5% energy</div>
+                            </div>
+                            <div class="alert-time">1 day ago</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Occupancy Heat Map -->
+                <div class="card occupancy-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <h3>Campus Occupancy Heat Map</h3>
+                        </div>
+                    </div>
+                    <div class="math-notation">
+                        <div class="math-title">Probability Model</div>
+                        P<sub>r</sub>(t) = Probability room r is occupied at time t<br>
+                        Based on historical data and class schedules
+                    </div>
+                    <div class="heatmap-container" id="heatmap">
+                        <!-- Heatmap cells will be generated by JavaScript -->
+                    </div>
+                    <div class="heatmap-legend">
+                        <div class="legend-item">
+                            <div class="legend-color occupancy-low"></div>
+                            <span>Low (P<sub>r</sub>(t) < 0.3)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color occupancy-medium"></div>
+                            <span>Medium (0.3 ≤ P<sub>r</sub>(t) < 0.6)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color occupancy-high"></div>
+                            <span>High (0.6 ≤ P<sub>r</sub>(t) < 0.9)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color occupancy-very-high"></div>
+                            <span>Very High (P<sub>r</sub>(t) ≥ 0.9)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Device Status Grid -->
+                <div class="card devices-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-laptop-house"></i>
+                            <h3>Device Status Grid</h3>
+                        </div>
+                        <div class="device-summary">
+                            <span>342 Active | 28 Off | 5 Issues</span>
+                        </div>
+                    </div>
+                    <div class="devices-grid" id="devicesGrid">
+                        <!-- Device cards will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Generate sample occupancy heatmap data
+        function generateHeatmap() {
+            const heatmap = document.getElementById('heatmap');
+            const buildings = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const floors = ['1', '2', '3', '4'];
+            
+            buildings.forEach(building => {
+                floors.forEach(floor => {
+                    // Generate random occupancy probability
+                    const probability = Math.random();
+                    let occupancyClass;
+                    
+                    if (probability < 0.3) {
+                        occupancyClass = 'occupancy-low';
+                    } else if (probability < 0.6) {
+                        occupancyClass = 'occupancy-medium';
+                    } else if (probability < 0.9) {
+                        occupancyClass = 'occupancy-high';
+                    } else {
+                        occupancyClass = 'occupancy-very-high';
+                    }
+                    
+                    const cell = document.createElement('div');
+                    cell.className = `heatmap-cell ${occupancyClass}`;
+                    cell.textContent = `${building}${floor}`;
+                    cell.title = `Occupancy Probability: ${(probability * 100).toFixed(1)}%`;
+                    
+                    heatmap.appendChild(cell);
+                });
+            });
+        }
+
+        // Generate sample device data
+        function generateDevices() {
+            const devicesGrid = document.getElementById('devicesGrid');
+            const deviceTypes = ['Light', 'AC', 'Fan', 'Computer', 'Projector'];
+            const locations = ['Library', 'Classroom A1', 'Lab B2', 'Office C3', 'Auditorium'];
+            const statuses = ['on', 'off', 'warning'];
+            
+            for (let i = 0; i < 12; i++) {
+                const type = deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
+                const location = locations[Math.floor(Math.random() * locations.length)];
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                const power = (Math.random() * 200 + 50).toFixed(0);
+                
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.innerHTML = `
+                    <div class="device-header">
+                        <div class="device-name">${type}</div>
+                        <div class="device-status status-${status}"></div>
+                    </div>
+                    <div class="device-location">${location}</div>
+                    <div class="device-power">
+                        <span>Power:</span>
+                        <span>${power} W</span>
+                    </div>
+                `;
+                
+                devicesGrid.appendChild(deviceCard);
+            }
+        }
+
+        // Initialize consumption chart
+        function initConsumptionChart() {
+            const ctx = document.getElementById('consumptionChart').getContext('2d');
+            
+            // Sample data for the chart
+            const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
+            const consumptionData = Array.from({length: 24}, () => Math.floor(Math.random() * 100) + 50);
+            const optimizedData = consumptionData.map(value => value * 0.7); // 30% reduction
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [
+                        {
+                            label: 'Actual Consumption',
+                            data: consumptionData,
+                            borderColor: '#3CB371',
+                            backgroundColor: 'rgba(60, 179, 113, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Optimized Target',
+                            data: optimizedData,
+                            borderColor: '#2E8B57',
+                            borderDash: [5, 5],
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Real-time Energy Consumption (∑f(r,t))',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time of Day'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Power Consumption (kW)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            generateHeatmap();
+            generateDevices();
+            initConsumptionChart();
+            
+            // Add interactivity to filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    // In a real application, this would update the dashboard data
+                });
+            });
+            
+            // Add interactivity to heatmap cells
+            const heatmapCells = document.querySelectorAll('.heatmap-cell');
+            heatmapCells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const location = this.textContent;
+                    alert(`Showing detailed analytics for ${location}`);
+                    // In a real application, this would navigate to location details
+                });
+            });
+        });
+    </script>
+</body>
+</html>

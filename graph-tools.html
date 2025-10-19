@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSmart Campus - Advanced Graph Theory Tools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #0f1a25;
+            --text-light: #e0f2fe;
+            --card-bg: #1a2b3c;
+            --accent-blue: #4fc3f7;
+            --accent-purple: #9575cd;
+            --accent-orange: #ff9800;
+            --accent-pink: #f06292;
+            --accent-red: #ff5252;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f1a25 0%, #1a2b3c 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, #e0f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-signup {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3);
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-signup:hover {
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(149, 117, 205, 0.4);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 3rem 0;
+            background: linear-gradient(135deg, rgba(15, 26, 37, 0.9) 0%, rgba(26, 43, 60, 0.9) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(79, 195, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(149, 117, 205, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(46, 139, 87, 0.1) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            position: relative;
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(79, 195, 247, 0.3);
+        }
+
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            margin: 20px auto;
+            border-radius: 3px;
+            box-shadow: 0 0 20px rgba(79, 195, 247, 0.5);
+        }
+
+        .page-description {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        /* Main Layout */
+        .graph-tools-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .tools-sidebar {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #223344 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .tools-nav {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .tools-nav li {
+            margin-bottom: 0.8rem;
+        }
+
+        .tools-nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tools-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 195, 247, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tools-nav a:hover::before {
+            left: 100%;
+        }
+
+        .tools-nav a:hover, .tools-nav a.active {
+            background: linear-gradient(135deg, rgba(79, 195, 247, 0.2), rgba(149, 117, 205, 0.2));
+            border-color: rgba(79, 195, 247, 0.3);
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(79, 195, 247, 0.2);
+        }
+
+        .tools-nav i {
+            width: 25px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .algorithm-controls {
+            margin-top: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 2rem;
+        }
+
+        .control-group h3 {
+            margin-bottom: 1.2rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group h3::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), transparent);
+        }
+
+        .btn-tool {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3);
+        }
+
+        .btn-tool::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-tool:hover::before {
+            left: 100%;
+        }
+
+        .btn-tool:hover {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(149, 117, 205, 0.4);
+        }
+
+        .btn-tool i {
+            margin-right: 10px;
+            width: 25px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Graph Type Selector */
+        .graph-type-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .graph-type-btn {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .graph-type-btn:hover {
+            background: rgba(79, 195, 247, 0.1);
+            border-color: var(--accent-blue);
+            transform: translateY(-3px);
+        }
+
+        .graph-type-btn.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-color: transparent;
+            box-shadow: 0 5px 20px rgba(79, 195, 247, 0.3);
+        }
+
+        /* Graph Visualization */
+        .graph-container {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #223344 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            height: 700px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        #cy {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 26, 37, 0.7);
+        }
+
+        .graph-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .graph-mode {
+            display: flex;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Selected Nodes Display */
+        .selected-nodes {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .selected-node {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--accent-red), #ff4081);
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(255, 82, 82, 0.3);
+        }
+
+        .selected-node i {
+            font-size: 0.9rem;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            margin-top: 3rem;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #223344 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            position: relative;
+            padding-bottom: 15px;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(79, 195, 247, 0.5);
+        }
+
+        .results-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .algorithm-result {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            border-left: 5px solid var(--accent-blue);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .algorithm-result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 195, 247, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .algorithm-result:hover::before {
+            left: 100%;
+        }
+
+        .algorithm-result:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-left-color: var(--accent-purple);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(79, 195, 247, 0.4);
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            margin: 1rem 0;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .result-details {
+            font-size: 1rem;
+            color: rgba(224, 242, 254, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Mathematical Concepts */
+        .math-concepts {
+            margin: 4rem 0;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #223344 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .concept-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            border-left: 5px solid var(--accent-green);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(144, 238, 144, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .concept-card:hover::before {
+            left: 100%;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-left-color: var(--accent-blue);
+        }
+
+        .concept-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .concept-icon {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+        }
+
+        .formula {
+            background: rgba(15, 26, 37, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #0a141f 0%, #15202b 100%);
+            color: var(--text-light);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.8rem;
+            position: relative;
+            padding-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(224, 242, 254, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+            padding-left: 8px;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(224, 242, 254, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.4s ease;
+            max-width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff5252, #ff4081);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .graph-tools-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .graph-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .graph-mode {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .results-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-project-diagram"></i>
+                    <h1>EcoSmart Campus</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="toolbox.html">Toolbox</a>
+                    <a href="graph-tools.html" class="active">Graph Tools</a>
+                </nav>
+                <div class="auth-buttons">
+                    <button class="btn btn-login">Login</button>
+                    <button class="btn btn-signup">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Advanced Graph Theory Tools</h1>
+            <p class="page-description">
+                Explore powerful graph algorithms with stunning visualizations. Optimize campus infrastructure, 
+                sensor placement, and energy networks using cutting-edge mathematical models and extreme color schemes.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="container">
+        <div class="graph-tools-layout">
+            <!-- Tools Sidebar -->
+            <div class="tools-sidebar">
+                <ul class="tools-nav">
+                    <li><a href="#graph-editor" class="active" data-tool="graph-editor"><i class="fas fa-edit"></i> Graph Editor</a></li>
+                    <li><a href="#mst-algorithms" data-tool="mst-algorithms"><i class="fas fa-tree"></i> MST Algorithms</a></li>
+                    <li><a href="#dominating-set" data-tool="dominating-set"><i class="fas fa-chess-board"></i> Dominating Set</a></li>
+                    <li><a href="#shortest-path" data-tool="shortest-path"><i class="fas fa-route"></i> Shortest Path</a></li>
+                    <li><a href="#sensor-placement" data-tool="sensor-placement"><i class="fas fa-satellite-dish"></i> Sensor Placement</a></li>
+                    <li><a href="#wiring-optimizer" data-tool="wiring-optimizer"><i class="fas fa-bolt"></i> Wiring Optimizer</a></li>
+                    <li><a href="#cluster-analysis" data-tool="cluster-analysis"><i class="fas fa-object-group"></i> Cluster Analysis</a></li>
+                </ul>
+
+                <div class="control-group">
+                    <h3><i class="fas fa-palette"></i> Graph Types</h3>
+                    <div class="graph-type-selector">
+                        <button class="graph-type-btn active" data-graph="campus">Campus Map</button>
+                        <button class="graph-type-btn" data-graph="sensor">Sensor Network</button>
+                        <button class="graph-type-btn" data-graph="energy">Energy Grid</button>
+                        <button class="graph-type-btn" data-graph="social">Social Network</button>
+                    </div>
+                </div>
+
+                <div class="algorithm-controls">
+                    <div class="control-group">
+                        <h3><i class="fas fa-tools"></i> Graph Operations</h3>
+                        <button class="btn-tool" id="add-node"><i class="fas fa-plus-circle"></i> Add Node</button>
+                        <button class="btn-tool" id="add-edge"><i class="fas fa-link"></i> Add Edge</button>
+                        <button class="btn-tool" id="clear-graph"><i class="fas fa-trash"></i> Clear Graph</button>
+                        <button class="btn-tool" id="load-sample"><i class="fas fa-download"></i> Load Sample</button>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-sliders-h"></i> Algorithm Parameters</h3>
+                        <div class="form-group">
+                            <label for="start-node"><i class="fas fa-play-circle"></i> Start Node</label>
+                            <select id="start-node" class="form-control">
+                                <option value="">Select start node</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="end-node"><i class="fas fa-flag-checkered"></i> End Node</label>
+                            <select id="end-node" class="form-control">
+                                <option value="">Select end node</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cluster-count"><i class="fas fa-object-group"></i> Cluster Count</label>
+                            <input type="number" id="cluster-count" class="form-control" value="4" min="2" max="8">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Nodes Display -->
+                <div class="selected-nodes">
+                    <div class="selected-node" id="start-node-display">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Start: None</span>
+                    </div>
+                    <div class="selected-node" id="end-node-display">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span>End: None</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graph Visualization -->
+            <div class="graph-container">
+                <div class="graph-controls">
+                    <div class="graph-mode">
+                        <button class="mode-btn active" data-mode="select">Select</button>
+                        <button class="mode-btn" data-mode="add-node">Add Node</button>
+                        <button class="mode-btn" data-mode="add-edge">Add Edge</button>
+                        <button class="mode-btn" data-mode="delete">Delete</button>
+                    </div>
+                    <div>
+                        <button class="btn-tool" id="run-algorithm" style="display: inline-block; width: auto; padding: 12px 25px;">
+                            <i class="fas fa-play-circle"></i> Run Algorithm
+                        </button>
+                    </div>
+                </div>
+                <div id="cy"></div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel">
+            <h2 class="section-title">Algorithm Results</h2>
+            <div class="results-content">
+                <div class="algorithm-result">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <h3>Minimum Spanning Tree</h3>
+                    </div>
+                    <div class="result-value" id="mst-cost">0</div>
+                    <div class="result-details" id="mst-details">No MST calculated yet. Run the algorithm to see results.</div>
+                </div>
+
+                <div class="algorithm-result">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-chess-board"></i>
+                        </div>
+                        <h3>Dominating Set</h3>
+                    </div>
+                    <div class="result-value" id="dominating-set-size">0</div>
+                    <div class="result-details" id="dominating-set-details">No dominating set calculated yet. Run the algorithm to see results.</div>
+                </div>
+
+                <div class="algorithm-result">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <h3>Shortest Path</h3>
+                    </div>
+                    <div class="result-value" id="shortest-path-length">0</div>
+                    <div class="result-details" id="shortest-path-details">No path calculated yet. Select start and end nodes.</div>
+                </div>
+
+                <div class="algorithm-result">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-object-group"></i>
+                        </div>
+                        <h3>Cluster Analysis</h3>
+                    </div>
+                    <div class="result-value" id="cluster-count">0</div>
+                    <div class="result-details" id="cluster-details">No clusters identified yet. Run the algorithm to see results.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mathematical Concepts Section -->
+    <section class="container math-concepts">
+        <h2 class="section-title">Mathematical Foundation</h2>
+        <p>Our advanced graph analysis tools are built on proven mathematical algorithms that form the intelligence behind campus optimization and infrastructure planning.</p>
+        <div class="concepts-grid">
+            <div class="concept-card">
+                <h4><i class="fas fa-tree concept-icon"></i> Minimum Spanning Tree</h4>
+                <p>Find the minimum cost tree connecting all nodes using Prim's or Kruskal's algorithm. Essential for optimizing wiring and network costs.</p>
+                <div class="formula">MST = argmin<sub>T⊆G</sub> Σ<sub>e∈T</sub> w(e)</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-chess-board concept-icon"></i> Dominating Set</h4>
+                <p>Find the smallest set of nodes where every node is either in the set or adjacent to it. Perfect for optimal sensor placement.</p>
+                <div class="formula">D ⊆ V such that ∀v∈V: v∈D ∨ ∃u∈D: (u,v)∈E</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-route concept-icon"></i> Shortest Path</h4>
+                <p>Find the minimum cost path between two nodes using Dijkstra's algorithm. Critical for routing and navigation systems.</p>
+                <div class="formula">dist(s,t) = min<sub>p∈paths(s,t)</sub> Σ<sub>e∈p</sub> w(e)</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-object-group concept-icon"></i> Cluster Analysis</h4>
+                <p>Partition nodes into clusters based on connectivity and usage patterns. Ideal for grouping similar campus areas.</p>
+                <div class="formula">C = {C<sub>1</sub>, C<sub>2</sub>, ..., C<sub>k</sub>} where C<sub>i</sub> ⊆ V</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EcoSmart Campus</h3>
+                    <p>Transforming campus energy management through mathematical optimization and sustainable practices.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                        <li><a href="devices.html"><i class="fas fa-cogs"></i> Device Control</a></li>
+                        <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Mathematical Tools</h3>
+                    <ul class="footer-links">
+                        <li><a href="campus-layout.html"><i class="fas fa-project-diagram"></i> Graph Theory</a></li>
+                        <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Probability Calculator</a></li>
+                        <li><a href="schedules.html"><i class="fas fa-code-branch"></i> Boolean Logic Editor</a></li>
+                        <li><a href="analytics.html"><i class="fas fa-infinity"></i> Recurrence Relations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@ecosmart.edu</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +1 (555) 123-4567</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> Campus Energy Center</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> Mon-Fri 9AM-6PM</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 EcoSmart Campus Energy Optimization System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-text">Graph algorithm executed successfully!</span>
+    </div>
+
+    <script>
+        // Navigation function
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = 'notification';
+            
+            if (type !== 'success') {
+                notification.classList.add(type);
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Graph color schemes for different graph types
+        const colorSchemes = {
+            campus: {
+                node: '#4fc3f7',
+                edge: '#3CB371',
+                mst: '#ff6b6b',
+                dominating: '#ff9800',
+                path: '#ff5252', // Changed to red for shortest path
+                selected: '#ff5252', // Red for selected nodes
+                clusters: ['#4fc3f7', '#3CB371', '#ff9800', '#9575cd', '#f06292', '#4db6ac', '#ffd54f', '#a1887f']
+            },
+            sensor: {
+                node: '#ff9800',
+                edge: '#4db6ac',
+                mst: '#f06292',
+                dominating: '#4fc3f7',
+                path: '#ff5252', // Changed to red for shortest path
+                selected: '#ff5252', // Red for selected nodes
+                clusters: ['#ff9800', '#4db6ac', '#4fc3f7', '#3CB371', '#f06292', '#9575cd', '#ffd54f', '#a1887f']
+            },
+            energy: {
+                node: '#f06292',
+                edge: '#9575cd',
+                mst: '#4fc3f7',
+                dominating: '#3CB371',
+                path: '#ff5252', // Changed to red for shortest path
+                selected: '#ff5252', // Red for selected nodes
+                clusters: ['#f06292', '#9575cd', '#4fc3f7', '#3CB371', '#ff9800', '#4db6ac', '#ffd54f', '#a1887f']
+            },
+            social: {
+                node: '#9575cd',
+                edge: '#f06292',
+                mst: '#3CB371',
+                dominating: '#ff9800',
+                path: '#ff5252', // Changed to red for shortest path
+                selected: '#ff5252', // Red for selected nodes
+                clusters: ['#9575cd', '#f06292', '#3CB371', '#ff9800', '#4fc3f7', '#4db6ac', '#ffd54f', '#a1887f']
+            }
+        };
+
+        // Initialize Cytoscape
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentColorScheme = colorSchemes.campus;
+            let selectedStartNode = null;
+            let selectedEndNode = null;
+            
+            // Initialize Cytoscape
+            const cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: [],
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'background-color': currentColorScheme.node,
+                            'label': 'data(id)',
+                            'width': 40,
+                            'height': 40,
+                            'font-size': '14px',
+                            'color': '#fff',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'text-outline-width': 2,
+                            'text-outline-color': currentColorScheme.node,
+                            'border-width': 2,
+                            'border-color': '#fff',
+                            'border-opacity': 0.8
+                        }
+                    },
+                    {
+                        selector: 'node.selected-start',
+                        style: {
+                            'background-color': currentColorScheme.selected,
+                            'width': 50,
+                            'height': 50,
+                            'border-width': 4,
+                            'border-color': '#fff'
+                        }
+                    },
+                    {
+                        selector: 'node.selected-end',
+                        style: {
+                            'background-color': currentColorScheme.selected,
+                            'width': 50,
+                            'height': 50,
+                            'border-width': 4,
+                            'border-color': '#fff'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 3,
+                            'line-color': currentColorScheme.edge,
+                            'target-arrow-color': currentColorScheme.edge,
+                            'target-arrow-shape': 'triangle',
+                            'curve-style': 'bezier',
+                            'label': 'data(weight)',
+                            'font-size': '12px',
+                            'color': '#fff',
+                            'text-rotation': 'autorotate',
+                            'text-outline-width': 2,
+                            'text-outline-color': '#000'
+                        }
+                    },
+                    {
+                        selector: '.mst-edge',
+                        style: {
+                            'line-color': currentColorScheme.mst,
+                            'width': 6,
+                            'target-arrow-color': currentColorScheme.mst,
+                            'line-style': 'dashed'
+                        }
+                    },
+                    {
+                        selector: '.dominating-node',
+                        style: {
+                            'background-color': currentColorScheme.dominating,
+                            'width': 60,
+                            'height': 60,
+                            'border-width': 4,
+                            'border-color': '#fff'
+                        }
+                    },
+                    {
+                        selector: '.shortest-path',
+                        style: {
+                            'line-color': currentColorScheme.path, // This will be red
+                            'width': 8, // Thicker line for visibility
+                            'target-arrow-color': currentColorScheme.path,
+                            'line-style': 'solid'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'cose',
+                    idealEdgeLength: 100,
+                    nodeOverlap: 20,
+                    refresh: 20,
+                    fit: true,
+                    padding: 50,
+                    randomize: false,
+                    componentSpacing: 100,
+                    nodeRepulsion: 400000,
+                    edgeElasticity: 100,
+                    nestingFactor: 5,
+                    gravity: 80,
+                    numIter: 1000,
+                    initialTemp: 200,
+                    coolingFactor: 0.95,
+                    minTemp: 1.0
+                }
+            });
+
+            // Add cluster styles dynamically
+            for (let i = 0; i < 8; i++) {
+                cy.style().selector(`.cluster-${i+1}`).style({
+                    'background-color': currentColorScheme.clusters[i % currentColorScheme.clusters.length]
+                }).update();
+            }
+
+            // Graph state
+            let currentNodeId = 1;
+            let currentMode = 'select';
+            let edgeSource = null;
+
+            // Tool navigation
+            const toolLinks = document.querySelectorAll('.tools-nav a');
+            toolLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    toolLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    showNotification(`Switched to ${this.textContent.trim()} mode`);
+                });
+            });
+
+            // Graph type selection
+            const graphTypeButtons = document.querySelectorAll('.graph-type-btn');
+            graphTypeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    graphTypeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const graphType = this.getAttribute('data-graph');
+                    currentColorScheme = colorSchemes[graphType];
+                    updateGraphStyle();
+                    showNotification(`Loaded ${graphType.charAt(0).toUpperCase() + graphType.slice(1)} graph template`);
+                });
+            });
+
+            // Update graph style based on current color scheme
+            function updateGraphStyle() {
+                cy.style()
+                    .selector('node')
+                    .style('background-color', currentColorScheme.node)
+                    .style('text-outline-color', currentColorScheme.node)
+                    .update();
+                
+                cy.style()
+                    .selector('node.selected-start')
+                    .style('background-color', currentColorScheme.selected)
+                    .update();
+                
+                cy.style()
+                    .selector('node.selected-end')
+                    .style('background-color', currentColorScheme.selected)
+                    .update();
+                
+                cy.style()
+                    .selector('edge')
+                    .style('line-color', currentColorScheme.edge)
+                    .style('target-arrow-color', currentColorScheme.edge)
+                    .update();
+                
+                cy.style()
+                    .selector('.shortest-path')
+                    .style('line-color', currentColorScheme.path)
+                    .style('target-arrow-color', currentColorScheme.path)
+                    .update();
+                
+                // Update cluster colors
+                for (let i = 0; i < 8; i++) {
+                    cy.style().selector(`.cluster-${i+1}`).style({
+                        'background-color': currentColorScheme.clusters[i % currentColorScheme.clusters.length]
+                    }).update();
+                }
+                
+                // Refresh the graph to apply new styles
+                cy.nodes().style('background-color', currentColorScheme.node);
+                cy.edges().style('line-color', currentColorScheme.edge);
+                
+                // Re-apply selected node styles
+                if (selectedStartNode) {
+                    cy.getElementById(selectedStartNode).addClass('selected-start');
+                }
+                if (selectedEndNode) {
+                    cy.getElementById(selectedEndNode).addClass('selected-end');
+                }
+            }
+
+            // Update selected nodes display
+            function updateSelectedNodesDisplay() {
+                const startDisplay = document.getElementById('start-node-display');
+                const endDisplay = document.getElementById('end-node-display');
+                
+                startDisplay.innerHTML = `<i class="fas fa-play-circle"></i><span>Start: ${selectedStartNode || 'None'}</span>`;
+                endDisplay.innerHTML = `<i class="fas fa-flag-checkered"></i><span>End: ${selectedEndNode || 'None'}</span>`;
+                
+                // Update dropdowns
+                const startSelect = document.getElementById('start-node');
+                const endSelect = document.getElementById('end-node');
+                
+                if (selectedStartNode) {
+                    startSelect.value = selectedStartNode;
+                }
+                if (selectedEndNode) {
+                    endSelect.value = selectedEndNode;
+                }
+            }
+
+            // Mode buttons
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            modeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMode = this.getAttribute('data-mode');
+                    
+                    if (currentMode === 'select') {
+                        cy.boxSelectionEnabled(false);
+                    }
+                });
+            });
+
+            // Add node button
+            document.getElementById('add-node').addEventListener('click', function() {
+                currentMode = 'add-node';
+                modeButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-mode="add-node"]').classList.add('active');
+                showNotification('Click anywhere on the graph to add a node');
+            });
+
+            // Add edge button
+            document.getElementById('add-edge').addEventListener('click', function() {
+                currentMode = 'add-edge';
+                modeButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-mode="add-edge"]').classList.add('active');
+                showNotification('Click on a node to start creating an edge, then click on another node');
+            });
+
+            // Clear graph button
+            document.getElementById('clear-graph').addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear the entire graph?')) {
+                    cy.elements().remove();
+                    currentNodeId = 1;
+                    selectedStartNode = null;
+                    selectedEndNode = null;
+                    updateNodeSelects();
+                    updateSelectedNodesDisplay();
+                    showNotification('Graph cleared successfully');
+                }
+            });
+
+            // Load sample button
+            document.getElementById('load-sample').addEventListener('click', function() {
+                // Clear existing elements
+                cy.elements().remove();
+                
+                // Add sample nodes
+                for (let i = 1; i <= 12; i++) {
+                    cy.add({
+                        group: 'nodes',
+                        data: { id: `n${i}` },
+                        position: {
+                            x: Math.random() * 600 + 200,
+                            y: Math.random() * 400 + 150
+                        }
+                    });
+                }
+                
+                // Add sample edges with weights
+                const sampleEdges = [
+                    { source: 'n1', target: 'n2', weight: 4 },
+                    { source: 'n1', target: 'n3', weight: 2 },
+                    { source: 'n2', target: 'n3', weight: 1 },
+                    { source: 'n2', target: 'n4', weight: 5 },
+                    { source: 'n3', target: 'n4', weight: 8 },
+                    { source: 'n3', target: 'n5', weight: 10 },
+                    { source: 'n4', target: 'n5', weight: 2 },
+                    { source: 'n4', target: 'n6', weight: 6 },
+                    { source: 'n5', target: 'n6', weight: 3 },
+                    { source: 'n5', target: 'n7', weight: 7 },
+                    { source: 'n6', target: 'n7', weight: 4 },
+                    { source: 'n6', target: 'n8', weight: 9 },
+                    { source: 'n7', target: 'n8', weight: 5 },
+                    { source: 'n8', target: 'n9', weight: 6 },
+                    { source: 'n9', target: 'n10', weight: 3 },
+                    { source: 'n10', target: 'n11', weight: 7 },
+                    { source: 'n11', target: 'n12', weight: 4 },
+                    { source: 'n12', target: 'n1', weight: 8 }
+                ];
+                
+                sampleEdges.forEach(edge => {
+                    cy.add({
+                        group: 'edges',
+                        data: {
+                            id: `e${edge.source}-${edge.target}`,
+                            source: edge.source,
+                            target: edge.target,
+                            weight: edge.weight
+                        }
+                    });
+                });
+                
+                currentNodeId = 13;
+                selectedStartNode = null;
+                selectedEndNode = null;
+                updateNodeSelects();
+                updateSelectedNodesDisplay();
+                cy.layout({ name: 'cose' }).run();
+                showNotification('Sample graph loaded with 12 nodes and 18 edges');
+            });
+
+            // Run algorithm button
+            document.getElementById('run-algorithm').addEventListener('click', function() {
+                const activeTool = document.querySelector('.tools-nav a.active').getAttribute('data-tool');
+                runAlgorithm(activeTool);
+            });
+
+            // Graph interaction
+            cy.on('tap', 'node', function(evt) {
+                const node = evt.target;
+                const nodeId = node.id();
+                
+                if (currentMode === 'add-node') {
+                    // Add new node near clicked node
+                    const pos = node.position();
+                    const newNodeId = `n${currentNodeId++}`;
+                    
+                    cy.add({
+                        group: 'nodes',
+                        data: { id: newNodeId },
+                        position: {
+                            x: pos.x + 60,
+                            y: pos.y + 60
+                        }
+                    });
+                    
+                    updateNodeSelects();
+                    showNotification(`Added node ${newNodeId}`);
+                } else if (currentMode === 'add-edge') {
+                    if (edgeSource === null) {
+                        edgeSource = node.id();
+                        node.style('background-color', currentColorScheme.dominating);
+                        showNotification(`Selected ${node.id()}. Now click on another node to create an edge`);
+                    } else {
+                        if (edgeSource !== node.id()) {
+                            // Add edge between source and target
+                            const weight = Math.floor(Math.random() * 10) + 1;
+                            cy.add({
+                                group: 'edges',
+                                data: {
+                                    id: `e${edgeSource}-${node.id()}`,
+                                    source: edgeSource,
+                                    target: node.id(),
+                                    weight: weight
+                                }
+                            });
+                            
+                            showNotification(`Added edge from ${edgeSource} to ${node.id()} with weight ${weight}`);
+                        }
+                        
+                        // Reset edge source
+                        cy.getElementById(edgeSource).style('background-color', currentColorScheme.node);
+                        edgeSource = null;
+                    }
+                } else if (currentMode === 'delete') {
+                    node.remove();
+                    if (selectedStartNode === nodeId) selectedStartNode = null;
+                    if (selectedEndNode === nodeId) selectedEndNode = null;
+                    updateNodeSelects();
+                    updateSelectedNodesDisplay();
+                    showNotification(`Removed node ${node.id()}`);
+                } else if (currentMode === 'select') {
+                    // Select nodes for shortest path
+                    if (!selectedStartNode) {
+                        selectedStartNode = nodeId;
+                        node.addClass('selected-start');
+                        showNotification(`Selected ${nodeId} as start node`);
+                    } else if (!selectedEndNode && nodeId !== selectedStartNode) {
+                        selectedEndNode = nodeId;
+                        node.addClass('selected-end');
+                        showNotification(`Selected ${nodeId} as end node`);
+                    } else if (nodeId === selectedStartNode) {
+                        // Deselect start node
+                        selectedStartNode = null;
+                        node.removeClass('selected-start');
+                        showNotification('Deselected start node');
+                    } else if (nodeId === selectedEndNode) {
+                        // Deselect end node
+                        selectedEndNode = null;
+                        node.removeClass('selected-end');
+                        showNotification('Deselected end node');
+                    } else {
+                        // Replace start or end node
+                        if (confirm('Replace start node?')) {
+                            cy.getElementById(selectedStartNode).removeClass('selected-start');
+                            selectedStartNode = nodeId;
+                            node.addClass('selected-start');
+                            showNotification(`Selected ${nodeId} as start node`);
+                        } else {
+                            cy.getElementById(selectedEndNode).removeClass('selected-end');
+                            selectedEndNode = nodeId;
+                            node.addClass('selected-end');
+                            showNotification(`Selected ${nodeId} as end node`);
+                        }
+                    }
+                    updateSelectedNodesDisplay();
+                }
+            });
+
+            cy.on('tap', 'edge', function(evt) {
+                const edge = evt.target;
+                
+                if (currentMode === 'delete') {
+                    edge.remove();
+                    showNotification(`Removed edge between ${edge.source().id()} and ${edge.target().id()}`);
+                }
+            });
+
+            cy.on('tap', function(evt) {
+                if (evt.target === cy && currentMode === 'add-node') {
+                    // Add node at clicked position
+                    const pos = evt.position;
+                    const newNodeId = `n${currentNodeId++}`;
+                    
+                    cy.add({
+                        group: 'nodes',
+                        data: { id: newNodeId },
+                        position: pos
+                    });
+                    
+                    updateNodeSelects();
+                    showNotification(`Added node ${newNodeId}`);
+                }
+            });
+
+            // Update node select options
+            function updateNodeSelects() {
+                const startSelect = document.getElementById('start-node');
+                const endSelect = document.getElementById('end-node');
+                
+                // Clear existing options (keep first option)
+                while (startSelect.options.length > 1) startSelect.remove(1);
+                while (endSelect.options.length > 1) endSelect.remove(1);
+                
+                // Add node options
+                cy.nodes().forEach(node => {
+                    const id = node.id();
+                    startSelect.add(new Option(id, id));
+                    endSelect.add(new Option(id, id));
+                });
+            }
+
+            // Dropdown change handlers
+            document.getElementById('start-node').addEventListener('change', function() {
+                const nodeId = this.value;
+                if (nodeId) {
+                    // Remove previous selection
+                    if (selectedStartNode) {
+                        cy.getElementById(selectedStartNode).removeClass('selected-start');
+                    }
+                    selectedStartNode = nodeId;
+                    cy.getElementById(nodeId).addClass('selected-start');
+                    updateSelectedNodesDisplay();
+                }
+            });
+
+            document.getElementById('end-node').addEventListener('change', function() {
+                const nodeId = this.value;
+                if (nodeId) {
+                    // Remove previous selection
+                    if (selectedEndNode) {
+                        cy.getElementById(selectedEndNode).removeClass('selected-end');
+                    }
+                    selectedEndNode = nodeId;
+                    cy.getElementById(nodeId).addClass('selected-end');
+                    updateSelectedNodesDisplay();
+                }
+            });
+
+            // Algorithm implementations
+            function runAlgorithm(algorithm) {
+                // Reset styles
+                cy.elements().removeClass('mst-edge dominating-node shortest-path');
+                for (let i = 1; i <= 8; i++) {
+                    cy.elements().removeClass(`cluster-${i}`);
+                }
+                cy.elements().style('background-color', currentColorScheme.node);
+                cy.edges().style('line-color', currentColorScheme.edge);
+                
+                // Re-apply selected node styles
+                if (selectedStartNode) {
+                    cy.getElementById(selectedStartNode).addClass('selected-start');
+                }
+                if (selectedEndNode) {
+                    cy.getElementById(selectedEndNode).addClass('selected-end');
+                }
+                
+                switch(algorithm) {
+                    case 'mst-algorithms':
+                        runMST();
+                        break;
+                    case 'dominating-set':
+                        runDominatingSet();
+                        break;
+                    case 'shortest-path':
+                        runShortestPath();
+                        break;
+                    case 'cluster-analysis':
+                        runClusterAnalysis();
+                        break;
+                    case 'sensor-placement':
+                        runSensorPlacement();
+                        break;
+                    case 'wiring-optimizer':
+                        runWiringOptimizer();
+                        break;
+                    default:
+                        showNotification('Please select an algorithm to run', 'warning');
+                }
+            }
+
+            function runMST() {
+                // Simple MST implementation (Prim's algorithm)
+                const nodes = cy.nodes();
+                if (nodes.length === 0) {
+                    showNotification('No nodes in graph. Please add nodes first.', 'error');
+                    return;
+                }
+                
+                const mstEdges = [];
+                const visited = new Set();
+                const startNode = nodes[0];
+                visited.add(startNode.id());
+                
+                let totalCost = 0;
+                
+                while (visited.size < nodes.length) {
+                    let minEdge = null;
+                    let minWeight = Infinity;
+                    
+                    // Find minimum edge from visited to unvisited
+                    cy.edges().forEach(edge => {
+                        const source = edge.source().id();
+                        const target = edge.target().id();
+                        const weight = edge.data('weight') || 1;
+                        
+                        if ((visited.has(source) && !visited.has(target)) || 
+                            (visited.has(target) && !visited.has(source))) {
+                            if (weight < minWeight) {
+                                minWeight = weight;
+                                minEdge = edge;
+                            }
+                        }
+                    });
+                    
+                    if (minEdge) {
+                        mstEdges.push(minEdge);
+                        totalCost += minWeight;
+                        
+                        // Add the new node to visited set
+                        const source = minEdge.source().id();
+                        const target = minEdge.target().id();
+                        if (visited.has(source)) {
+                            visited.add(target);
+                        } else {
+                            visited.add(source);
+                        }
+                    } else {
+                        break; // No more edges to add (disconnected graph)
+                    }
+                }
+                
+                // Highlight MST edges
+                mstEdges.forEach(edge => {
+                    edge.addClass('mst-edge');
+                });
+                
+                // Update results
+                document.getElementById('mst-cost').textContent = totalCost;
+                document.getElementById('mst-details').textContent = 
+                    `${mstEdges.length} edges in MST covering ${visited.size} nodes with total cost ${totalCost}`;
+                
+                showNotification(`Minimum Spanning Tree calculated with cost ${totalCost}`);
+            }
+
+            function runDominatingSet() {
+                // Greedy dominating set approximation
+                const nodes = cy.nodes();
+                if (nodes.length === 0) {
+                    showNotification('No nodes in graph. Please add nodes first.', 'error');
+                    return;
+                }
+                
+                const dominated = new Set();
+                const dominatingSet = [];
+                
+                // Sort nodes by degree (descending)
+                const sortedNodes = nodes.sort((a, b) => 
+                    b.neighborhood().nodes().length - a.neighborhood().nodes().length
+                );
+                
+                // Greedy selection
+                sortedNodes.forEach(node => {
+                    const nodeId = node.id();
+                    if (!dominated.has(nodeId)) {
+                        dominatingSet.push(nodeId);
+                        // Mark node and its neighbors as dominated
+                        dominated.add(nodeId);
+                        node.neighborhood().nodes().forEach(neighbor => {
+                            dominated.add(neighbor.id());
+                        });
+                    }
+                });
+                
+                // Highlight dominating set
+                dominatingSet.forEach(nodeId => {
+                    cy.getElementById(nodeId).addClass('dominating-node');
+                });
+                
+                // Update results
+                document.getElementById('dominating-set-size').textContent = dominatingSet.length;
+                document.getElementById('dominating-set-details').textContent = 
+                    `${dominatingSet.length} nodes dominate ${dominated.size} total nodes (${Math.round((dominatingSet.length / nodes.length) * 100)}% of nodes)`;
+                
+                showNotification(`Dominating set found with ${dominatingSet.length} nodes`);
+            }
+
+            function runShortestPath() {
+                if (!selectedStartNode || !selectedEndNode) {
+                    showNotification('Please select both start and end nodes for shortest path calculation', 'warning');
+                    return;
+                }
+                
+                if (selectedStartNode === selectedEndNode) {
+                    showNotification('Start and end nodes must be different', 'warning');
+                    return;
+                }
+                
+                // Dijkstra's algorithm
+                const nodes = cy.nodes();
+                const distances = {};
+                const previous = {};
+                const unvisited = new Set();
+                
+                // Initialize
+                nodes.forEach(node => {
+                    const id = node.id();
+                    distances[id] = id === selectedStartNode ? 0 : Infinity;
+                    previous[id] = null;
+                    unvisited.add(id);
+                });
+                
+                while (unvisited.size > 0) {
+                    // Find node with minimum distance
+                    let current = null;
+                    let minDist = Infinity;
+                    
+                    unvisited.forEach(nodeId => {
+                        if (distances[nodeId] < minDist) {
+                            minDist = distances[nodeId];
+                            current = nodeId;
+                        }
+                    });
+                    
+                    if (current === null || distances[current] === Infinity) {
+                        break; // No path exists
+                    }
+                    
+                    if (current === selectedEndNode) {
+                        break; // Found shortest path to target
+                    }
+                    
+                    unvisited.delete(current);
+                    
+                    // Update neighbors
+                    cy.getElementById(current).neighborhood().edges().forEach(edge => {
+                        const neighbor = edge.source().id() === current ? 
+                            edge.target().id() : edge.source().id();
+                        
+                        if (unvisited.has(neighbor)) {
+                            const weight = edge.data('weight') || 1;
+                            const alt = distances[current] + weight;
+                            
+                            if (alt < distances[neighbor]) {
+                                distances[neighbor] = alt;
+                                previous[neighbor] = current;
+                            }
+                        }
+                    });
+                }
+                
+                // Reconstruct path
+                const path = [];
+                let current = selectedEndNode;
+                
+                while (current !== null) {
+                    path.unshift(current);
+                    current = previous[current];
+                }
+                
+                if (path.length === 1 && path[0] !== selectedStartNode) {
+                    showNotification('No path exists between the selected nodes', 'error');
+                    return;
+                }
+                
+                // Highlight path with RED line
+                for (let i = 0; i < path.length - 1; i++) {
+                    const edge = cy.edges(`[source = "${path[i]}"][target = "${path[i+1]}"], 
+                                          [source = "${path[i+1]}"][target = "${path[i]}"]`);
+                    if (edge.length > 0) {
+                        edge.addClass('shortest-path');
+                    }
+                }
+                
+                // Update results
+                document.getElementById('shortest-path-length').textContent = distances[selectedEndNode];
+                document.getElementById('shortest-path-details').textContent = 
+                    `Path: ${path.join(' → ')} with total distance ${distances[selectedEndNode]}`;
+                
+                showNotification(`Shortest path found with length ${distances[selectedEndNode]}`);
+            }
+
+            function runClusterAnalysis() {
+                const clusterCount = parseInt(document.getElementById('cluster-count').value) || 4;
+                const nodes = cy.nodes();
+                
+                if (nodes.length === 0) {
+                    showNotification('No nodes in graph. Please add nodes first.', 'error');
+                    return;
+                }
+                
+                if (nodes.length < clusterCount) {
+                    showNotification('More clusters than nodes. Please reduce cluster count or add more nodes.', 'error');
+                    return;
+                }
+                
+                // Simple k-means clustering based on position
+                const positions = nodes.map(node => ({
+                    id: node.id(),
+                    x: node.position('x'),
+                    y: node.position('y')
+                }));
+                
+                // Initialize centroids randomly
+                let centroids = [];
+                for (let i = 0; i < clusterCount; i++) {
+                    const randomNode = positions[Math.floor(Math.random() * positions.length)];
+                    centroids.push({ x: randomNode.x, y: randomNode.y, cluster: i });
+                }
+                
+                // Assign nodes to clusters
+                let clusters = Array(clusterCount).fill().map(() => []);
+                let changed = true;
+                let iterations = 0;
+                
+                while (changed && iterations < 100) {
+                    changed = false;
+                    clusters = Array(clusterCount).fill().map(() => []);
+                    
+                    // Assign each node to nearest centroid
+                    positions.forEach(point => {
+                        let minDist = Infinity;
+                        let bestCluster = 0;
+                        
+                        centroids.forEach((centroid, idx) => {
+                            const dist = Math.sqrt(
+                                Math.pow(point.x - centroid.x, 2) + 
+                                Math.pow(point.y - centroid.y, 2)
+                            );
+                            
+                            if (dist < minDist) {
+                                minDist = dist;
+                                bestCluster = idx;
+                            }
+                        });
+                        
+                        clusters[bestCluster].push(point.id);
+                    });
+                    
+                    // Update centroids
+                    centroids.forEach((centroid, idx) => {
+                        const clusterPoints = clusters[idx].map(id => 
+                            positions.find(p => p.id === id)
+                        );
+                        
+                        if (clusterPoints.length > 0) {
+                            const newX = clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length;
+                            const newY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length;
+                            
+                            if (newX !== centroid.x || newY !== centroid.y) {
+                                changed = true;
+                                centroid.x = newX;
+                                centroid.y = newY;
+                            }
+                        }
+                    });
+                    
+                    iterations++;
+                }
+                
+                // Color nodes by cluster
+                clusters.forEach((cluster, idx) => {
+                    cluster.forEach(nodeId => {
+                        cy.getElementById(nodeId).addClass(`cluster-${idx + 1}`);
+                    });
+                });
+                
+                // Update results
+                document.getElementById('cluster-count').textContent = clusters.length;
+                document.getElementById('cluster-details').textContent = 
+                    `Clusters: ${clusters.map((c, i) => `C${i+1}:${c.length}`).join(', ')}`;
+                
+                showNotification(`Identified ${clusters.length} clusters with ${iterations} iterations`);
+            }
+
+            function runSensorPlacement() {
+                // Sensor placement is similar to dominating set
+                runDominatingSet();
+                showNotification('Sensor placement optimized using dominating set algorithm');
+            }
+
+            function runWiringOptimizer() {
+                // Wiring optimization uses MST
+                runMST();
+                showNotification('Wiring cost minimized using MST algorithm');
+            }
+
+            // Load initial sample graph
+            document.getElementById('load-sample').click();
+        });
+    </script>
+</body>
+</html>
