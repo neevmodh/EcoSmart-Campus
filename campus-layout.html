@@ -28,6 +28,12 @@
             --lab-blue: #87CEEB;
             --library-purple: #9370DB;
             --auditorium-orange: #FFA500;
+            --light-green: #E8F5E9;
+            --dark-green: #1B5E20;
+            --gradient-green: linear-gradient(135deg, #2E8B57 0%, #4CAF50 100%);
+            --gradient-light: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            --shadow: 0 10px 30px rgba(46, 139, 87, 0.15);
+            --shadow-hover: 0 15px 40px rgba(46, 139, 87, 0.25);
         }
 
         body {
@@ -46,13 +52,14 @@
 
         /* Header Styles */
         header {
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            background: var(--gradient-green);
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            box-shadow: 0 4px 20px rgba(46, 139, 87, 0.3);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
         .header-content {
@@ -64,21 +71,28 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo i {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
         .logo h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 1.8rem;
         }
 
         .nav-links a {
@@ -86,27 +100,41 @@
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.2);
+        .nav-links a:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: white;
+            transition: width 0.3s ease;
         }
 
-        .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+        .nav-links a.active:before {
+            width: 100%;
+        }
+
+        .nav-links a:hover:before {
+            width: 100%;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
+            position: relative;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: var(--accent-green);
             border-radius: 50%;
             display: flex;
@@ -114,6 +142,50 @@
             justify-content: center;
             color: var(--primary-green);
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            width: 200px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 0.8rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown a:hover {
+            background: var(--light-green);
+            color: var(--primary-green);
         }
 
         /* Layout Manager */
@@ -127,22 +199,27 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
         }
 
         .manager-title {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
         .manager-title i {
             color: var(--primary-green);
-            font-size: 2rem;
+            font-size: 2.5rem;
         }
 
         .manager-title h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--text-dark);
+            font-weight: 700;
         }
 
         .manager-actions {
@@ -151,9 +228,9 @@
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -165,12 +242,13 @@
         .btn-primary {
             background: var(--primary-green);
             color: white;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
         }
 
         .btn-primary:hover {
             background: var(--leaf-green);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+            box-shadow: 0 6px 20px rgba(46, 139, 87, 0.4);
         }
 
         .btn-secondary {
@@ -181,12 +259,13 @@
         .btn-secondary:hover {
             background: var(--mint);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
         }
 
         /* Main Layout */
         .layout-container {
             display: grid;
-            grid-template-columns: 320px 1fr 320px;
+            grid-template-columns: 350px 1fr 350px;
             gap: 1.5rem;
             height: 80vh;
         }
@@ -208,24 +287,30 @@
         /* Side Panels */
         .side-panel {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            box-shadow: var(--shadow);
             overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .side-panel:hover {
+            box-shadow: var(--shadow-hover);
         }
 
         .panel-title {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
+            padding-bottom: 1rem;
             border-bottom: 2px solid var(--accent-green);
             color: var(--text-dark);
         }
 
         .panel-title i {
             color: var(--primary-green);
+            font-size: 1.5rem;
         }
 
         /* Graph Canvas */
@@ -240,9 +325,9 @@
             justify-content: space-between;
             align-items: center;
             background: var(--card-bg);
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.1);
+            padding: 1.2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
             flex-wrap: wrap;
             gap: 1rem;
         }
@@ -255,34 +340,36 @@
         }
 
         .control-btn {
-            padding: 8px 16px;
-            background: var(--accent-green);
+            padding: 10px 16px;
+            background: var(--light-green);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             transition: all 0.3s ease;
             font-weight: 500;
+            color: var(--text-dark);
         }
 
         .control-btn:hover {
-            background: var(--mint);
+            background: var(--accent-green);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
         }
 
         .control-btn.active {
             background: var(--primary-green);
             color: white;
-            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.3);
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
         }
 
         .graph-canvas {
             flex: 1;
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
             overflow: hidden;
             position: relative;
             min-height: 500px;
@@ -298,7 +385,7 @@
         .vertex-form {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.2rem;
             margin-bottom: 2rem;
         }
 
@@ -312,12 +399,15 @@
             font-weight: 600;
             color: var(--text-dark);
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-control {
-            padding: 10px;
+            padding: 12px;
             border: 2px solid var(--accent-green);
-            border-radius: 6px;
+            border-radius: 8px;
             background: var(--background);
             transition: all 0.3s ease;
             font-size: 0.9rem;
@@ -331,7 +421,7 @@
 
         .vertex-list {
             list-style: none;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             margin-bottom: 1rem;
         }
@@ -340,17 +430,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: var(--background);
-            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 10px;
+            background: var(--light-green);
+            border-radius: 10px;
             border-left: 4px solid var(--primary-green);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vertex-item:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
         }
 
         .vertex-item:hover {
             transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.2);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.2);
+        }
+
+        .vertex-item:hover:before {
+            transform: scaleX(1);
         }
 
         .vertex-info {
@@ -361,7 +470,7 @@
 
         .vertex-name {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         .vertex-type {
@@ -371,13 +480,13 @@
 
         .vertex-actions {
             display: flex;
-            gap: 5px;
+            gap: 8px;
         }
 
         .action-btn {
-            padding: 6px;
+            padding: 8px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             background: transparent;
             color: var(--text-dark);
@@ -387,6 +496,7 @@
         .action-btn:hover {
             background: var(--accent-green);
             transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.2);
         }
 
         /* Analysis Tools */
@@ -397,40 +507,61 @@
         }
 
         .tool-card {
-            background: var(--background);
-            border-radius: 8px;
-            padding: 1.2rem;
+            background: var(--light-green);
+            border-radius: 12px;
+            padding: 1.5rem;
             border-left: 4px solid var(--secondary-green);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
         }
 
         .tool-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(46, 139, 87, 0.15);
+        }
+
+        .tool-card:hover:before {
+            transform: scaleX(1);
         }
 
         .tool-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 1rem;
         }
 
         .tool-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: var(--accent-green);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary-green);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(46, 139, 87, 0.2);
         }
 
         .tool-title {
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
 
         .tool-description {
@@ -443,31 +574,42 @@
         .tool-result {
             background: var(--card-bg);
             padding: 1rem;
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: 'Courier New', monospace;
             font-size: 0.8rem;
             max-height: 120px;
             overflow-y: auto;
             border: 1px solid var(--accent-green);
+            transition: all 0.3s ease;
+        }
+
+        .tool-result:hover {
+            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.1);
         }
 
         /* Mathematical Notation */
         .math-notation {
-            background: var(--background);
-            padding: 1rem;
-            border-radius: 8px;
+            background: var(--light-green);
+            padding: 1.2rem;
+            border-radius: 10px;
             margin-top: 1rem;
             font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            border-left: 3px solid var(--primary-green);
+            font-size: 0.85rem;
+            border-left: 4px solid var(--primary-green);
             line-height: 1.4;
+            transition: all 0.3s ease;
+        }
+
+        .math-notation:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.1);
         }
 
         .math-title {
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--primary-green);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         /* Graph Elements */
@@ -519,6 +661,12 @@
             filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.6));
         }
 
+        .node.path-node {
+            stroke: var(--danger);
+            stroke-width: 4px;
+            filter: drop-shadow(0 0 10px rgba(220, 20, 60, 0.6));
+        }
+
         .link {
             stroke: #999;
             stroke-width: 2px;
@@ -568,11 +716,17 @@
             top: 20px;
             right: 20px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
             border: 1px solid var(--accent-green);
-            min-width: 180px;
+            min-width: 200px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .graph-legend:hover {
+            box-shadow: var(--shadow-hover);
         }
 
         .legend-title {
@@ -581,42 +735,43 @@
             color: var(--text-dark);
             font-size: 0.9rem;
             border-bottom: 1px solid var(--accent-green);
-            padding-bottom: 0.3rem;
+            padding-bottom: 0.5rem;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
+            gap: 10px;
+            margin-bottom: 8px;
             font-size: 0.8rem;
         }
 
         .legend-color {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             border: 2px solid;
             flex-shrink: 0;
         }
 
         .legend-line {
-            width: 25px;
-            height: 3px;
+            width: 30px;
+            height: 4px;
             flex-shrink: 0;
         }
 
         /* Status Bar */
         .status-bar {
             background: var(--card-bg);
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
             margin-top: 1rem;
             font-size: 0.9rem;
             border-left: 4px solid var(--primary-green);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: var(--shadow);
         }
 
         .status-info {
@@ -627,7 +782,76 @@
         .status-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            padding: 1.2rem 1.8rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.4s ease;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        .notification.success {
+            background: var(--primary-green);
+        }
+
+        .notification i {
+            font-size: 1.5rem;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--light-green);
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .floating-1 {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 5%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            right: 5%;
+            animation: float 20s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
         }
 
         /* Responsive Design */
@@ -638,20 +862,14 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
+        @media (max-width: 1024px) {
+            .layout-container {
+                grid-template-columns: 300px 1fr;
             }
             
             .manager-header {
                 flex-direction: column;
-                gap: 1rem;
+                gap: 1.5rem;
                 align-items: flex-start;
             }
             
@@ -659,20 +877,88 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .manager-header {
+                padding: 1rem;
+            }
+            
+            .manager-title h2 {
+                font-size: 1.5rem;
+            }
+            
+            .layout-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
             
             .status-bar {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 0.8rem;
                 align-items: flex-start;
             }
             
             .status-info {
                 flex-wrap: wrap;
             }
+            
+            .graph-legend {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .manager-title h2 {
+                font-size: 1.3rem;
+            }
+            
+            .panel-title {
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .control-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .vertex-item {
+                padding: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Floating Elements -->
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -687,12 +973,18 @@
                     <a href="campus-layout.html" class="active">Campus Layout</a>
                     <a href="analytics.html">Analytics</a>
                     <a href="devices.html">Devices</a>
-                     <a href="toolbox.html">Toolbox</a>
+                    <a href="toolbox.html">Toolbox</a>
                     <a href="reports.html">Reports</a>
                 </nav>
                 <div class="user-info">
                     <div class="user-avatar">CA</div>
                     <span>Campus Admin</span>
+                    <div class="user-dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -950,6 +1242,15 @@
         </div>
     </section>
 
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <strong id="notificationTitle">System Updated</strong>
+            <p id="notificationMessage">Energy optimization algorithms have been improved.</p>
+        </div>
+    </div>
+
     <script>
         // Enhanced Graph data structure with realistic campus layout
         let graph = {
@@ -999,14 +1300,14 @@
                 .force("link", d3.forceLink(graph.links)
                     .id(d => d.id)
                     .distance(d => d.weight)
-                    .strength(1)) // Increased strength for better link positioning
+                    .strength(1))
                 .force("charge", d3.forceManyBody()
                     .strength(-400)
                     .distanceMin(50)
                     .distanceMax(300))
                 .force("center", d3.forceCenter(width / 2, height / 2))
                 .force("collision", d3.forceCollide().radius(35))
-                .alphaDecay(0.02) // Slower decay for smoother animation
+                .alphaDecay(0.02)
                 .velocityDecay(0.4);
 
             // Create arrow markers for directed edges
@@ -1024,10 +1325,10 @@
                 .attr("d", "M0,-5L10,0L0,5")
                 .attr("fill", "#999");
 
-            // Draw links with better styling - FIXED: Proper data binding
+            // Draw links with proper data binding
             linkElements = svg.append("g")
                 .selectAll("line")
-                .data(graph.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`) // Proper key function
+                .data(graph.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`)
                 .enter().append("line")
                 .attr("class", d => `link ${d.type}`)
                 .attr("data-source", d => d.source.id || d.source)
@@ -1037,7 +1338,7 @@
             // Draw nodes with enhanced styling
             nodeElements = svg.append("g")
                 .selectAll("circle")
-                .data(graph.nodes, d => d.id) // Proper key function
+                .data(graph.nodes, d => d.id)
                 .enter().append("circle")
                 .attr("class", d => `node ${d.type}`)
                 .attr("r", 24)
@@ -1067,7 +1368,7 @@
                 .attr("text-anchor", "middle")
                 .attr("dy", -5);
 
-            // Update positions on simulation tick - FIXED: Proper coordinate calculation
+            // Update positions on simulation tick
             simulation.on("tick", () => {
                 linkElements
                     .attr("x1", d => {
@@ -1197,7 +1498,7 @@
                             
                             if (!edgeExists) {
                                 const weight = Math.floor(Math.random() * 80) + 20;
-                                // FIXED: Store node objects instead of IDs for proper force simulation
+                                // Store node objects instead of IDs for proper force simulation
                                 const sourceNode = graph.nodes.find(n => n.id === sourceId);
                                 const targetNode = graph.nodes.find(n => n.id === nodeId);
                                 
@@ -1209,7 +1510,7 @@
                                 });
                                 showNotification(`Pathway added between ${sourceId} and ${nodeId}`, "success");
                                 
-                                // FIXED: Properly refresh the graph with new links
+                                // Properly refresh the graph with new links
                                 refreshGraph();
                             } else {
                                 showNotification("Pathway already exists!", "warning");
@@ -1246,7 +1547,7 @@
                 currentMode === 'addVertex' ? 'Add Room' : 'Add Pathway';
         }
 
-        // Refresh graph visualization - FIXED: Proper cleanup and reinitialization
+        // Refresh graph visualization
         function refreshGraph() {
             // Stop current simulation
             if (simulation) {
@@ -1340,9 +1641,33 @@
 
         // Show notification
         function showNotification(message, type = "info") {
-            // Simple notification implementation
-            console.log(`${type.toUpperCase()}: ${message}`);
-            // In a real app, you'd use a proper notification system
+            const notification = document.getElementById('notification');
+            const notificationTitle = document.getElementById('notificationTitle');
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            // Set notification content
+            notificationTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            notificationMessage.textContent = message;
+            
+            // Remove existing classes
+            notification.classList.remove('error', 'warning', 'success');
+            
+            // Add appropriate class based on type
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else if (type === 'warning') {
+                notification.classList.add('warning');
+            } else if (type === 'success') {
+                notification.classList.add('success');
+            }
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
         }
 
         // Add new vertex
@@ -1528,6 +1853,11 @@
                     }).classed("shortest-path", true);
                 }
                 
+                // Highlight path nodes
+                path.forEach(nodeId => {
+                    nodeElements.filter(d => d.id === nodeId).classed("path-node", true);
+                });
+                
                 const totalDistance = calculatePathDistance(path);
                 document.getElementById('shortestPathResult').textContent = 
                     `Shortest path: ${path.join(' → ')} | Distance: ${totalDistance}m | Rooms: ${path.length}`;
@@ -1592,7 +1922,7 @@
 
         function clearAnalysis() {
             linkElements.classed("mst dominating shortest-path", false);
-            nodeElements.classed("dominating", false);
+            nodeElements.classed("dominating path-node", false);
             document.getElementById('activeAnalysis').textContent = 'None';
             
             document.getElementById('mstResult').textContent = 
@@ -1658,6 +1988,11 @@
             window.addEventListener('resize', function() {
                 refreshGraph();
             });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Campus Layout Manager loaded successfully!', 'success');
+            }, 1000);
         });
     </script>
 </body>

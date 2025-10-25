@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/regression@2.0.1/dist/regression.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -34,6 +34,12 @@
             --forecast-orange: #FF8C00;
             --sidebar-width: 250px;
             --header-height: 80px;
+            --light-green: #E8F5E9;
+            --dark-green: #1B5E20;
+            --gradient-green: linear-gradient(135deg, #2E8B57 0%, #4CAF50 100%);
+            --gradient-light: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            --shadow: 0 10px 30px rgba(46, 139, 87, 0.15);
+            --shadow-hover: 0 15px 40px rgba(46, 139, 87, 0.25);
         }
 
         body {
@@ -43,7 +49,6 @@
             min-height: 100vh;
         }
 
-        
         .container {
             width: 95%;
             max-width: 2000px;
@@ -51,16 +56,16 @@
             padding: 0 20px;
         }
 
-        
         /* Header Styles */
         header {
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            background: var(--gradient-green);
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            box-shadow: 0 4px 20px rgba(46, 139, 87, 0.3);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
         .header-content {
@@ -72,21 +77,28 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo i {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
         .logo h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 1.8rem;
         }
 
         .nav-links a {
@@ -94,50 +106,92 @@
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-
-        .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn {
             padding: 8px 16px;
             border-radius: 6px;
-            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a.active:before {
+            width: 100%;
+        }
+
+        .nav-links a:hover:before {
+            width: 100%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .btn-login {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
         }
 
-        .btn-signup {
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
             background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            width: 200px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 0.8rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown a:hover {
+            background: var(--light-green);
             color: var(--primary-green);
-        }
-
-        .btn-login:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-signup:hover {
-            background: var(--accent-green);
-            transform: translateY(-2px);
         }
 
         /* Analytics Dashboard */
@@ -154,8 +208,14 @@
             background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
             padding: 1.5rem;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-header:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
         }
 
         .dashboard-title {
@@ -251,7 +311,7 @@
             padding: 1.8rem 1.5rem;
             border-radius: 16px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             border: 1px solid rgba(255,255,255,0.3);
             transition: all 0.4s ease;
             position: relative;
@@ -271,7 +331,7 @@
 
         .stat-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 18px 35px rgba(0,0,0,0.12);
+            box-shadow: var(--shadow-hover);
         }
 
         .stat-icon {
@@ -286,6 +346,11 @@
             color: white;
             font-size: 2rem;
             box-shadow: 0 8px 20px rgba(65, 105, 225, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .stat-value {
@@ -311,6 +376,11 @@
             margin-top: 0.8rem;
             font-size: 0.9rem;
             font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(46, 139, 87, 0.1);
+            width: fit-content;
+            margin: 0.8rem auto 0;
         }
 
         .trend-up {
@@ -341,7 +411,7 @@
             background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             border: 1px solid rgba(255,255,255,0.3);
             transition: all 0.4s ease;
             position: relative;
@@ -360,7 +430,7 @@
 
         .chart-container:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+            box-shadow: var(--shadow-hover);
         }
 
         .chart-header {
@@ -430,9 +500,15 @@
             background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             border: 1px solid rgba(255,255,255,0.3);
             margin-bottom: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .models-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
         }
 
         .panel-title {
@@ -461,18 +537,37 @@
         }
 
         .model-card {
-            background: var(--background);
+            background: var(--light-green);
             padding: 1.8rem;
             border-radius: 16px;
             border-left: 5px solid var(--analytics-blue);
             transition: all 0.4s ease;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
         }
 
         .model-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .model-card:hover:before {
+            transform: scaleX(1);
         }
 
         .model-header {
@@ -492,6 +587,7 @@
             justify-content: center;
             color: white;
             font-size: 1.6rem;
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.25);
         }
 
         .model-title {
@@ -508,6 +604,12 @@
             margin-bottom: 1.2rem;
             font-size: 1rem;
             border-left: 4px solid var(--analytics-blue);
+            transition: all 0.3s ease;
+        }
+
+        .model-formula:hover {
+            background: rgba(65, 105, 225, 0.12);
+            transform: translateX(5px);
         }
 
         .model-parameters {
@@ -549,8 +651,14 @@
             background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .pattern-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
         }
 
         .pattern-grid {
@@ -567,10 +675,16 @@
         }
 
         .cluster-visualization {
-            background: var(--background);
+            background: var(--light-green);
             padding: 1.8rem;
             border-radius: 16px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .cluster-visualization:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
         }
 
         .cluster-canvas {
@@ -584,6 +698,7 @@
             justify-content: center;
             color: #666;
             font-weight: 600;
+            overflow: hidden;
         }
 
         .pattern-analysis h4 {
@@ -607,7 +722,7 @@
             color: white;
             padding: 1.2rem 1.8rem;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-hover);
             z-index: 1001;
             transform: translateX(400px);
             transition: all 0.5s ease;
@@ -635,6 +750,36 @@
 
         .notification i {
             font-size: 1.3rem;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--light-green);
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .floating-1 {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 5%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            right: 5%;
+            animation: float 20s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
         }
 
         /* Responsive Design */
@@ -668,7 +813,6 @@
             .header-content {
                 flex-direction: column;
                 gap: 1.2rem;
-                padding: 10px 0;
             }
             
             .logo h1 {
@@ -684,10 +828,6 @@
             .nav-links a {
                 padding: 8px 14px;
                 font-size: 0.85rem;
-            }
-            
-            .user-info {
-                padding: 8px 16px;
             }
             
             .dashboard-title h2 {
@@ -711,6 +851,12 @@
             .chart-controls {
                 width: 100%;
                 justify-content: center;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
             }
         }
 
@@ -777,7 +923,10 @@
     </style>
 </head>
 <body>
-    
+    <!-- Floating Elements -->
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -792,12 +941,18 @@
                     <a href="campus-layout.html">Campus Layout</a>
                     <a href="analytics.html" class="active">Analytics</a>
                     <a href="devices.html">Devices</a>
-                     <a href="toolbox.html">Toolbox</a>
+                    <a href="toolbox.html">Toolbox</a>
                     <a href="reports.html">Reports</a>
                 </nav>
                 <div class="user-info">
                     <div class="user-avatar">EA</div>
                     <span>Energy Analyst</span>
+                    <div class="user-dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1418,6 +1573,80 @@
                     }
                 }
             });
+
+            // Cluster Chart
+            const clusterCtx = document.getElementById('clusterChart').getContext('2d');
+            clusterChart = new Chart(clusterCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Low Usage',
+                            data: generateClusterData(10, 50, 100, 30, 70),
+                            backgroundColor: 'rgba(144, 238, 144, 0.7)',
+                            borderColor: '#90EE90',
+                            pointRadius: 8
+                        },
+                        {
+                            label: 'Medium Usage',
+                            data: generateClusterData(20, 150, 200, 100, 150),
+                            backgroundColor: 'rgba(65, 105, 225, 0.7)',
+                            borderColor: '#4169E1',
+                            pointRadius: 8
+                        },
+                        {
+                            label: 'High Usage',
+                            data: generateClusterData(15, 300, 350, 200, 250),
+                            backgroundColor: 'rgba(255, 140, 0, 0.7)',
+                            borderColor: '#FF8C00',
+                            pointRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Energy Usage Pattern Clusters',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time of Day (Hours)',
+                                font: { weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 24
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy Consumption (kWh)',
+                                font: { weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 300
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate cluster data for visualization
+        function generateClusterData(count, xCenter, xSpread, yCenter, ySpread) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                data.push({
+                    x: xCenter + (Math.random() - 0.5) * xSpread,
+                    y: yCenter + (Math.random() - 0.5) * ySpread
+                });
+            }
+            return data;
         }
 
         // Update all statistics displays

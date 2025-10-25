@@ -28,6 +28,9 @@
             --lab-blue: #87CEEB;
             --library-purple: #9370DB;
             --success: #32CD32;
+            --light-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            --medium-shadow: 0 6px 20px rgba(46, 139, 87, 0.15);
+            --dark-shadow: 0 10px 30px rgba(46, 139, 87, 0.2);
         }
 
         body {
@@ -48,7 +51,7 @@
             background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            box-shadow: var(--medium-shadow);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -64,6 +67,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
         }
 
         .logo i {
@@ -169,7 +173,7 @@
         .btn-primary:hover {
             background: var(--leaf-green);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+            box-shadow: var(--medium-shadow);
         }
 
         .btn-secondary {
@@ -212,7 +216,7 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            box-shadow: var(--light-shadow);
             overflow-y: auto;
         }
 
@@ -241,7 +245,7 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            box-shadow: var(--light-shadow);
         }
 
         /* Form Styles */
@@ -443,7 +447,7 @@
 
         .probability-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            box-shadow: var(--light-shadow);
         }
 
         .probability-value {
@@ -477,7 +481,7 @@
 
         .rule-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            box-shadow: var(--light-shadow);
         }
 
         .rule-header {
@@ -526,7 +530,7 @@
 
         .device-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+            box-shadow: var(--light-shadow);
         }
 
         .device-header {
@@ -606,32 +610,39 @@
             color: #666;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .optimizer-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .timetable-grid {
-                grid-template-columns: 60px repeat(7, 1fr);
-                font-size: 0.7rem;
-            }
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--light-shadow);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
         }
 
         /* Tab Navigation */
@@ -672,41 +683,6 @@
             display: block;
         }
 
-        /* Statistics Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-card {
-            background: var(--background);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid var(--primary-green);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-green);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
         /* Modal Styles */
         .modal {
             display: none;
@@ -719,6 +695,12 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -729,6 +711,13 @@
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: var(--dark-shadow);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
@@ -762,10 +751,11 @@
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: var(--medium-shadow);
             z-index: 1001;
             transform: translateX(400px);
             transition: transform 0.3s ease;
+            max-width: 300px;
         }
 
         .notification.show {
@@ -778,6 +768,126 @@
 
         .notification.warning {
             background: var(--warning);
+        }
+
+        .notification.info {
+            background: var(--lab-blue);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced Event Styles */
+        .event-priority-high { border-left: 4px solid var(--danger); }
+        .event-priority-medium { border-left: 4px solid var(--warning); }
+        .event-priority-low { border-left: 4px solid var(--success); }
+
+        /* Room Status Indicators */
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-available { background: var(--success); }
+        .status-occupied { background: var(--warning); }
+        .status-conflict { background: var(--danger); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .optimizer-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .timetable-grid {
+                grid-template-columns: 60px repeat(7, 1fr);
+                font-size: 0.7rem;
+            }
+
+            .optimizer-actions {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Chart Container */
+        .chart-container {
+            height: 200px;
+            margin: 1rem 0;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 6px 12px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--mint);
         }
     </style>
 </head>
@@ -883,8 +993,70 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="eventDescription">Description (Optional)</label>
+                    <textarea id="eventDescription" class="form-control" rows="3" placeholder="Add event description..."></textarea>
+                </div>
+
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                     <i class="fas fa-save"></i> Save Event
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Optimization Progress Modal -->
+    <div class="modal" id="optimizationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Optimizing Schedule</h3>
+                <button class="close-modal" onclick="closeModal('optimizationModal')">&times;</button>
+            </div>
+            <div>
+                <p id="optimizationStatus">Analyzing schedule conflicts...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="optimizationProgress"></div>
+                </div>
+                <div class="math-notation" style="margin-top: 1rem;">
+                    <div class="math-title">Optimization Process</div>
+                    Applying Boolean logic rules...<br>
+                    Calculating energy savings...<br>
+                    Resolving conflicts using probability models...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rule Editor Modal -->
+    <div class="modal" id="ruleEditorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="ruleEditorTitle">Edit Rule</h3>
+                <button class="close-modal" onclick="closeModal('ruleEditorModal')">&times;</button>
+            </div>
+            <form id="ruleForm">
+                <div class="form-group">
+                    <label for="ruleName">Rule Name</label>
+                    <input type="text" id="ruleName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="ruleCondition">Boolean Condition</label>
+                    <input type="text" id="ruleCondition" class="form-control" placeholder="e.g., O_r(t) ∧ (¬D(t) ∨ C_r(t))" required>
+                </div>
+                <div class="form-group">
+                    <label for="ruleAction">Action</label>
+                    <textarea id="ruleAction" class="form-control" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rulePriority">Priority</label>
+                    <select id="rulePriority" class="form-control">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i> Save Rule
                 </button>
             </form>
         </div>
@@ -894,13 +1066,15 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">
+                <div class="logo" onclick="navigateTo('index.html')">
                     <i class="fas fa-calendar-alt"></i>
                     <h1>Schedule Optimizer</h1>
                 </div>
                 <nav class="nav-links">
                     <a href="index.html">Home</a>
                     <a href="schedules.html" class="active">Schedules</a>
+                    <a href="reports.html">Reports</a>
+                    <a href="analytics.html">Analytics</a>
                 </nav>
                 <div class="user-info">
                     <div class="user-avatar">CA</div>
@@ -927,6 +1101,9 @@
                     </button>
                     <button class="btn btn-secondary" id="importSchedule">
                         <i class="fas fa-upload"></i> Import
+                    </button>
+                    <button class="btn btn-warning" id="clearAll" onclick="clearAllEvents()">
+                        <i class="fas fa-trash"></i> Clear All
                     </button>
                 </div>
             </div>
@@ -1005,6 +1182,11 @@
                         <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="recalculateProbabilities()">
                             <i class="fas fa-calculator"></i> Recalculate Probabilities
                         </button>
+
+                        <!-- Probability Visualization -->
+                        <div class="chart-container">
+                            <canvas id="probabilityChart"></canvas>
+                        </div>
                     </div>
 
                     <!-- Boolean Logic Tab -->
@@ -1014,45 +1196,8 @@
                             <h3>Boolean Logic Rules</h3>
                         </div>
 
-                        <div class="rules-section">
-                            <div class="rule-card" onclick="editRule('lights')">
-                                <div class="rule-header">
-                                    <div class="rule-title">Light Automation</div>
-                                    <i class="fas fa-lightbulb" style="color: var(--warning);"></i>
-                                </div>
-                                <div class="rule-condition">
-                                    L<sub>r</sub>(t) = O<sub>r</sub>(t) ∧ (¬D(t) ∨ C<sub>r</sub>(t))
-                                </div>
-                                <div class="rule-action">
-                                    Lights ON when: Occupied AND (Night OR Class)
-                                </div>
-                            </div>
-
-                            <div class="rule-card" onclick="editRule('ac')">
-                                <div class="rule-header">
-                                    <div class="rule-title">AC Automation</div>
-                                    <i class="fas fa-wind" style="color: var(--lab-blue);"></i>
-                                </div>
-                                <div class="rule-condition">
-                                    AC<sub>r</sub>(t) = O<sub>r</sub>(t) ∧ (T<sub>r</sub>(t) > 25°C)
-                                </div>
-                                <div class="rule-action">
-                                    AC ON when: Occupied AND Temperature > 25°C
-                                </div>
-                            </div>
-
-                            <div class="rule-card" onclick="editRule('projector')">
-                                <div class="rule-header">
-                                    <div class="rule-title">Projector Automation</div>
-                                    <i class="fas fa-video" style="color: var(--library-purple);"></i>
-                                </div>
-                                <div class="rule-condition">
-                                    P<sub>r</sub>(t) = C<sub>r</sub>(t) ∧ L<sub>r</sub>(t)
-                                </div>
-                                <div class="rule-action">
-                                    Projector ON when: Class Scheduled AND Lights ON
-                                </div>
-                            </div>
+                        <div class="rules-section" id="rulesList">
+                            <!-- Rules will be populated by JavaScript -->
                         </div>
 
                         <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="addNewRule()">
@@ -1067,6 +1212,12 @@
                             → = IMPLIES (Conditional)<br><br>
                             Example: A ∧ B → C means "If A AND B then C"
                         </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="testAllRules()">Test All Rules</button>
+                            <button class="quick-action-btn" onclick="exportRules()">Export Rules</button>
+                            <button class="quick-action-btn" onclick="importRules()">Import Rules</button>
+                        </div>
                     </div>
 
                     <!-- Devices Tab -->
@@ -1076,55 +1227,28 @@
                             <h3>Device Scheduling</h3>
                         </div>
 
-                        <div class="device-scheduler">
-                            <div class="device-card" onclick="scheduleDevice('lights')">
-                                <div class="device-header">
-                                    <div class="device-name">Lights</div>
-                                    <div class="device-status" style="background: var(--leaf-green);"></div>
-                                </div>
-                                <div class="device-schedule">
-                                    Auto: 7:00-22:00<br>
-                                    Rooms: <span id="lightsRooms">28</span>/32
-                                </div>
-                            </div>
-
-                            <div class="device-card" onclick="scheduleDevice('ac')">
-                                <div class="device-header">
-                                    <div class="device-name">AC Units</div>
-                                    <div class="device-status" style="background: var(--leaf-green);"></div>
-                                </div>
-                                <div class="device-schedule">
-                                    Auto: 8:00-18:00<br>
-                                    Rooms: <span id="acRooms">15</span>/18
-                                </div>
-                            </div>
-
-                            <div class="device-card" onclick="scheduleDevice('computers')">
-                                <div class="device-header">
-                                    <div class="device-name">Computers</div>
-                                    <div class="device-status" style="background: var(--warning);"></div>
-                                </div>
-                                <div class="device-schedule">
-                                    Manual Schedule<br>
-                                    Rooms: <span id="computerRooms">8</span>/12
-                                </div>
-                            </div>
-
-                            <div class="device-card" onclick="scheduleDevice('projectors')">
-                                <div class="device-header">
-                                    <div class="device-name">Projectors</div>
-                                    <div class="device-status" style="background: var(--leaf-green);"></div>
-                                </div>
-                                <div class="device-schedule">
-                                    Class-based<br>
-                                    Rooms: <span id="projectorRooms">10</span>/10
-                                </div>
-                            </div>
+                        <div class="device-scheduler" id="deviceList">
+                            <!-- Devices will be populated by JavaScript -->
                         </div>
 
                         <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="bulkScheduleDevices()">
                             <i class="fas fa-cogs"></i> Bulk Schedule Devices
                         </button>
+
+                        <div class="room-status">
+                            <div class="status-dot status-available"></div>
+                            <span>Available</span>
+                            <div class="status-dot status-occupied" style="margin-left: 1rem;"></div>
+                            <span>Occupied</span>
+                            <div class="status-dot status-conflict" style="margin-left: 1rem;"></div>
+                            <span>Conflict</span>
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="enableAllDevices()">Enable All</button>
+                            <button class="quick-action-btn" onclick="disableAllDevices()">Disable All</button>
+                            <button class="quick-action-btn" onclick="generateDeviceReport()">Generate Report</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1185,6 +1309,12 @@
                             Conflict Resolution: <span id="conflictResolution">3</span>/<span id="totalConflicts">6</span> issues resolved<br>
                             Boolean Rules Active: <span id="activeRules">12</span>/15
                         </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="autoResolveConflicts()">Auto-Resolve Conflicts</button>
+                            <button class="quick-action-btn" onclick="suggestOptimizations()">Suggest Optimizations</button>
+                            <button class="quick-action-btn" onclick="viewOptimizationHistory()">View History</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1195,12 +1325,12 @@
         // Enhanced data structure with full functionality
         let scheduleData = {
             classes: [
-                { id: 1, name: "CS101", room: "A101", day: "Mon", start: 8, end: 10, type: "class", priority: "high" },
-                { id: 2, name: "MATH202", room: "B201", day: "Mon", start: 10, end: 12, type: "class", priority: "medium" },
-                { id: 3, name: "PHY301", room: "C301", day: "Tue", start: 9, end: 11, type: "lab", priority: "high" },
-                { id: 4, name: "CHEM101", room: "D102", day: "Wed", start: 13, end: 15, type: "class", priority: "medium" },
-                { id: 5, name: "BIO201", room: "E202", day: "Thu", start: 11, end: 13, type: "lab", priority: "high" },
-                { id: 6, name: "ENG101", room: "A101", day: "Fri", start: 14, end: 16, type: "class", priority: "medium" }
+                { id: 1, name: "CS101", room: "A101", day: "Mon", start: 8, end: 10, type: "class", priority: "high", description: "Introduction to Computer Science" },
+                { id: 2, name: "MATH202", room: "B201", day: "Mon", start: 10, end: 12, type: "class", priority: "medium", description: "Advanced Calculus" },
+                { id: 3, name: "PHY301", room: "C301", day: "Tue", start: 9, end: 11, type: "lab", priority: "high", description: "Physics Laboratory" },
+                { id: 4, name: "CHEM101", room: "D102", day: "Wed", start: 13, end: 15, type: "class", priority: "medium", description: "General Chemistry" },
+                { id: 5, name: "BIO201", room: "E202", day: "Thu", start: 11, end: 13, type: "lab", priority: "high", description: "Biology Laboratory" },
+                { id: 6, name: "ENG101", room: "A101", day: "Fri", start: 14, end: 16, type: "class", priority: "medium", description: "English Composition" }
             ],
             deviceEvents: [
                 { id: 101, device: "Lights", room: "A101", day: "Mon", start: 7, end: 18, type: "device", priority: "medium" },
@@ -1213,6 +1343,17 @@
                 weekend: 0.15,
                 holiday: 0.25
             },
+            rules: [
+                { id: 1, name: "Light Automation", condition: "L_r(t) = O_r(t) ∧ (¬D(t) ∨ C_r(t))", action: "Lights ON when: Occupied AND (Night OR Class)", priority: "high" },
+                { id: 2, name: "AC Automation", condition: "AC_r(t) = O_r(t) ∧ (T_r(t) > 25°C)", action: "AC ON when: Occupied AND Temperature > 25°C", priority: "medium" },
+                { id: 3, name: "Projector Automation", condition: "P_r(t) = C_r(t) ∧ L_r(t)", action: "Projector ON when: Class Scheduled AND Lights ON", priority: "high" }
+            ],
+            devices: [
+                { id: 1, name: "Lights", status: "active", rooms: 28, totalRooms: 32, schedule: "Auto: 7:00-22:00" },
+                { id: 2, name: "AC Units", status: "active", rooms: 15, totalRooms: 18, schedule: "Auto: 8:00-18:00" },
+                { id: 3, name: "Computers", status: "maintenance", rooms: 8, totalRooms: 12, schedule: "Manual Schedule" },
+                { id: 4, name: "Projectors", status: "active", rooms: 10, totalRooms: 10, schedule: "Class-based" }
+            ],
             threshold: 0.3,
             currentWeek: new Date(2023, 10, 27), // Nov 27, 2023
             conflicts: [],
@@ -1239,6 +1380,9 @@
             updateStatistics();
             detectConflicts();
             setupEventListeners();
+            initProbabilityChart();
+            renderRulesList();
+            renderDeviceList();
         }
 
         // Initialize timetable with enhanced functionality
@@ -1278,9 +1422,9 @@
                     // Add class events
                     classes.forEach(cls => {
                         const event = document.createElement('div');
-                        event.className = 'class-event';
+                        event.className = `class-event event-priority-${cls.priority}`;
                         event.textContent = `${cls.name} (${cls.room})`;
-                        event.title = `${cls.name} in ${cls.room} (Priority: ${cls.priority})`;
+                        event.title = `${cls.name} in ${cls.room}\nPriority: ${cls.priority}\n${cls.description || ''}`;
                         event.dataset.id = cls.id;
                         
                         // Add event actions
@@ -1298,9 +1442,9 @@
                     // Add device events
                     devices.forEach(device => {
                         const event = document.createElement('div');
-                        event.className = 'device-event';
+                        event.className = `device-event event-priority-${device.priority}`;
                         event.textContent = `${device.device} - ${device.room}`;
-                        event.title = `${device.device} in ${device.room} (Priority: ${device.priority})`;
+                        event.title = `${device.device} in ${device.room}\nPriority: ${device.priority}`;
                         event.dataset.id = device.id;
                         
                         // Add event actions
@@ -1374,6 +1518,24 @@
                         details: `Multiple events scheduled in ${events[0].room} on ${events[0].day} from ${events[0].start}:00-${events[0].end}:00`,
                         events: events,
                         severity: "high"
+                    });
+                }
+            });
+
+            // Check for device conflicts
+            scheduleData.deviceEvents.forEach(device => {
+                const hasClass = scheduleData.classes.some(cls => 
+                    cls.room === device.room && cls.day === device.day && 
+                    ((device.start >= cls.start && device.start < cls.end) || 
+                     (device.end > cls.start && device.end <= cls.end))
+                );
+                
+                if (!hasClass && device.device !== "Lights") {
+                    scheduleData.conflicts.push({
+                        type: "Device Without Class",
+                        details: `${device.device} scheduled in ${device.room} on ${device.day} but no class scheduled`,
+                        events: [device],
+                        severity: "medium"
                     });
                 }
             });
@@ -1462,8 +1624,11 @@
             
             const formData = new FormData(this);
             const eventType = document.getElementById('eventType').value;
+            const editingId = this.dataset.editingId;
+            const editingType = this.dataset.editingType;
+            
             const eventData = {
-                id: Date.now(),
+                id: editingId || Date.now(),
                 name: document.getElementById('eventName').value,
                 room: document.getElementById('eventRoom').value,
                 day: document.getElementById('eventDay').value,
@@ -1471,21 +1636,43 @@
                 end: parseInt(document.getElementById('endTime').value),
                 type: eventType,
                 priority: document.getElementById('eventPriority').value,
-                recurrence: document.getElementById('eventRecurrence').value
+                recurrence: document.getElementById('eventRecurrence').value,
+                description: document.getElementById('eventDescription').value
             };
 
             if (eventType === 'device') {
                 eventData.device = document.getElementById('eventDevice').value;
-                scheduleData.deviceEvents.push(eventData);
+                
+                if (editingId && editingType === 'device') {
+                    // Update existing device event
+                    const index = scheduleData.deviceEvents.findIndex(e => e.id == editingId);
+                    if (index !== -1) {
+                        scheduleData.deviceEvents[index] = eventData;
+                    }
+                } else {
+                    scheduleData.deviceEvents.push(eventData);
+                }
             } else {
-                scheduleData.classes.push(eventData);
+                if (editingId && editingType === 'class') {
+                    // Update existing class
+                    const index = scheduleData.classes.findIndex(e => e.id == editingId);
+                    if (index !== -1) {
+                        scheduleData.classes[index] = eventData;
+                    }
+                } else {
+                    scheduleData.classes.push(eventData);
+                }
             }
+
+            // Clear editing state
+            delete this.dataset.editingId;
+            delete this.dataset.editingType;
 
             initTimetable();
             detectConflicts();
             updateStatistics();
             closeModal('addEventModal');
-            showNotification(`${eventData.name} added successfully!`, 'success');
+            showNotification(`${eventData.name} ${editingId ? 'updated' : 'added'} successfully!`, 'success');
         });
 
         // Edit event
@@ -1501,6 +1688,8 @@
                 document.getElementById('startTime').value = event.start;
                 document.getElementById('endTime').value = event.end;
                 document.getElementById('eventPriority').value = event.priority;
+                document.getElementById('eventRecurrence').value = event.recurrence || 'weekly';
+                document.getElementById('eventDescription').value = event.description || '';
                 
                 if (type === 'device') {
                     document.getElementById('eventDevice').value = event.device;
@@ -1625,6 +1814,7 @@
             scheduleData.probabilities.holiday = Math.random() * 0.2 + 0.2; // 0.2-0.4
             
             updateStatistics();
+            updateProbabilityChart();
             showNotification('Probabilities recalculated based on latest data!', 'success');
         }
 
@@ -1633,24 +1823,135 @@
             if (newValue !== null && !isNaN(newValue) && newValue >= 0 && newValue <= 1) {
                 scheduleData.probabilities[type] = parseFloat(newValue);
                 updateStatistics();
+                updateProbabilityChart();
                 showNotification(`${type} probability updated to ${newValue}`, 'success');
             }
         }
 
-        function editRule(ruleType) {
-            showNotification(`Editing ${ruleType} automation rule...`, 'info');
+        // Rule management functions
+        function renderRulesList() {
+            const rulesList = document.getElementById('rulesList');
+            rulesList.innerHTML = '';
+            
+            scheduleData.rules.forEach(rule => {
+                const ruleCard = document.createElement('div');
+                ruleCard.className = 'rule-card';
+                ruleCard.innerHTML = `
+                    <div class="rule-header">
+                        <div class="rule-title">${rule.name}</div>
+                        <i class="fas fa-lightbulb" style="color: var(--warning);"></i>
+                    </div>
+                    <div class="rule-condition">${rule.condition}</div>
+                    <div class="rule-action">${rule.action}</div>
+                `;
+                ruleCard.onclick = () => editRule(rule.id);
+                rulesList.appendChild(ruleCard);
+            });
+        }
+
+        function editRule(ruleId) {
+            const rule = scheduleData.rules.find(r => r.id === ruleId);
+            if (rule) {
+                document.getElementById('ruleName').value = rule.name;
+                document.getElementById('ruleCondition').value = rule.condition;
+                document.getElementById('ruleAction').value = rule.action;
+                document.getElementById('rulePriority').value = rule.priority;
+                document.getElementById('ruleEditorTitle').textContent = 'Edit Rule';
+                document.getElementById('ruleForm').dataset.editingId = ruleId;
+                document.getElementById('ruleEditorModal').style.display = 'flex';
+            }
         }
 
         function addNewRule() {
-            showNotification('Opening rule creation dialog...', 'info');
+            document.getElementById('ruleName').value = '';
+            document.getElementById('ruleCondition').value = '';
+            document.getElementById('ruleAction').value = '';
+            document.getElementById('rulePriority').value = 'medium';
+            document.getElementById('ruleEditorTitle').textContent = 'Add New Rule';
+            delete document.getElementById('ruleForm').dataset.editingId;
+            document.getElementById('ruleEditorModal').style.display = 'flex';
         }
 
-        function scheduleDevice(deviceType) {
-            showNotification(`Scheduling ${deviceType} devices...`, 'info');
+        // Rule form submission
+        document.getElementById('ruleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const editingId = this.dataset.editingId;
+            const ruleData = {
+                id: editingId || Date.now(),
+                name: document.getElementById('ruleName').value,
+                condition: document.getElementById('ruleCondition').value,
+                action: document.getElementById('ruleAction').value,
+                priority: document.getElementById('rulePriority').value
+            };
+
+            if (editingId) {
+                // Update existing rule
+                const index = scheduleData.rules.findIndex(r => r.id == editingId);
+                if (index !== -1) {
+                    scheduleData.rules[index] = ruleData;
+                }
+            } else {
+                scheduleData.rules.push(ruleData);
+            }
+
+            renderRulesList();
+            closeModal('ruleEditorModal');
+            showNotification(`Rule "${ruleData.name}" ${editingId ? 'updated' : 'added'} successfully!`, 'success');
+        });
+
+        // Device management functions
+        function renderDeviceList() {
+            const deviceList = document.getElementById('deviceList');
+            deviceList.innerHTML = '';
+            
+            scheduleData.devices.forEach(device => {
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.innerHTML = `
+                    <div class="device-header">
+                        <div class="device-name">${device.name}</div>
+                        <div class="device-status" style="background: ${getDeviceStatusColor(device.status)};"></div>
+                    </div>
+                    <div class="device-schedule">
+                        ${device.schedule}<br>
+                        Rooms: <span>${device.rooms}</span>/${device.totalRooms}
+                    </div>
+                `;
+                deviceCard.onclick = () => scheduleDevice(device.id);
+                deviceList.appendChild(deviceCard);
+            });
+        }
+
+        function getDeviceStatusColor(status) {
+            switch(status) {
+                case 'active': return 'var(--leaf-green)';
+                case 'maintenance': return 'var(--warning)';
+                case 'inactive': return 'var(--danger)';
+                default: return 'var(--text-dark)';
+            }
+        }
+
+        function scheduleDevice(deviceId) {
+            const device = scheduleData.devices.find(d => d.id === deviceId);
+            if (device) {
+                showNotification(`Scheduling ${device.name} devices...`, 'info');
+                // In a real application, this would open a scheduling interface
+            }
         }
 
         function bulkScheduleDevices() {
             showNotification('Bulk scheduling all devices...', 'info');
+            // Simulate bulk scheduling
+            setTimeout(() => {
+                scheduleData.devices.forEach(device => {
+                    if (device.status === 'inactive') {
+                        device.status = 'active';
+                    }
+                });
+                renderDeviceList();
+                showNotification('All devices scheduled successfully!', 'success');
+            }, 1500);
         }
 
         function resolveConflict(conflictIndex) {
@@ -1666,19 +1967,7 @@
         // Setup event listeners
         function setupEventListeners() {
             document.getElementById('optimizeAll').addEventListener('click', () => {
-                showNotification('Running comprehensive schedule optimization...', 'info');
-                
-                // Simulate optimization process
-                setTimeout(() => {
-                    scheduleData.optimization.efficiency = Math.min(100, scheduleData.optimization.efficiency + 5);
-                    scheduleData.optimization.potentialSavings += 15;
-                    scheduleData.optimization.resolvedConflicts = scheduleData.optimization.totalConflicts;
-                    scheduleData.conflicts = [];
-                    
-                    updateStatistics();
-                    updateConflictList();
-                    showNotification('Optimization complete! 5% efficiency improvement achieved.', 'success');
-                }, 2000);
+                showOptimizationProgress();
             });
 
             document.getElementById('exportSchedule').addEventListener('click', () => {
@@ -1715,6 +2004,113 @@
             });
         }
 
+        // Show optimization progress
+        function showOptimizationProgress() {
+            const modal = document.getElementById('optimizationModal');
+            const progressBar = document.getElementById('optimizationProgress');
+            const statusText = document.getElementById('optimizationStatus');
+            
+            modal.style.display = 'flex';
+            progressBar.style.width = '0%';
+            statusText.textContent = 'Analyzing schedule conflicts...';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    statusText.textContent = 'Optimization complete!';
+                    
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        scheduleData.optimization.efficiency = Math.min(100, scheduleData.optimization.efficiency + 5);
+                        scheduleData.optimization.potentialSavings += 15;
+                        scheduleData.optimization.resolvedConflicts = scheduleData.optimization.totalConflicts;
+                        scheduleData.conflicts = [];
+                        
+                        updateStatistics();
+                        updateConflictList();
+                        showNotification('Optimization complete! 5% efficiency improvement achieved.', 'success');
+                    }, 1000);
+                }
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    statusText.textContent = 'Applying Boolean logic rules...';
+                } else if (progress < 60) {
+                    statusText.textContent = 'Calculating energy savings...';
+                } else if (progress < 90) {
+                    statusText.textContent = 'Resolving conflicts...';
+                } else {
+                    statusText.textContent = 'Finalizing optimization...';
+                }
+            }, 300);
+        }
+
+        // Initialize probability chart
+        function initProbabilityChart() {
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            window.probabilityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Class Hours', 'Evening Hours', 'Weekend Hours', 'Holiday Hours'],
+                    datasets: [{
+                        label: 'Occupancy Probability',
+                        data: Object.values(scheduleData.probabilities),
+                        backgroundColor: [
+                            'rgba(46, 139, 87, 0.7)',
+                            'rgba(144, 238, 144, 0.7)',
+                            'rgba(152, 251, 152, 0.7)',
+                            'rgba(135, 206, 235, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(46, 139, 87, 1)',
+                            'rgba(144, 238, 144, 1)',
+                            'rgba(152, 251, 152, 1)',
+                            'rgba(135, 206, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value * 100) + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Probability: ${(context.raw * 100).toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update probability chart
+        function updateProbabilityChart() {
+            if (window.probabilityChart) {
+                window.probabilityChart.data.datasets[0].data = Object.values(scheduleData.probabilities);
+                window.probabilityChart.update();
+            }
+        }
+
         // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
@@ -1730,6 +2126,108 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+        // Additional utility functions
+        function clearAllEvents() {
+            if (confirm('Are you sure you want to clear all events? This action cannot be undone.')) {
+                scheduleData.classes = [];
+                scheduleData.deviceEvents = [];
+                scheduleData.conflicts = [];
+                initApplication();
+                showNotification('All events cleared successfully!', 'success');
+            }
+        }
+
+        function enableAllDevices() {
+            scheduleData.devices.forEach(device => {
+                device.status = 'active';
+            });
+            renderDeviceList();
+            showNotification('All devices enabled!', 'success');
+        }
+
+        function disableAllDevices() {
+            scheduleData.devices.forEach(device => {
+                device.status = 'inactive';
+            });
+            renderDeviceList();
+            showNotification('All devices disabled!', 'warning');
+        }
+
+        function testAllRules() {
+            showNotification('Testing all Boolean logic rules...', 'info');
+            setTimeout(() => {
+                showNotification('All rules tested successfully! No conflicts found.', 'success');
+            }, 1500);
+        }
+
+        function exportRules() {
+            const rulesStr = JSON.stringify(scheduleData.rules, null, 2);
+            const dataBlob = new Blob([rulesStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'boolean-rules.json';
+            link.click();
+            showNotification('Rules exported successfully!', 'success');
+        }
+
+        function importRules() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const importedRules = JSON.parse(event.target.result);
+                        scheduleData.rules = importedRules;
+                        renderRulesList();
+                        showNotification('Rules imported successfully!', 'success');
+                    } catch (error) {
+                        showNotification('Error importing rules file!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function autoResolveConflicts() {
+            showNotification('Auto-resolving conflicts...', 'info');
+            setTimeout(() => {
+                scheduleData.conflicts = [];
+                scheduleData.optimization.resolvedConflicts = scheduleData.optimization.totalConflicts;
+                updateConflictList();
+                updateStatistics();
+                showNotification('All conflicts resolved automatically!', 'success');
+            }, 2000);
+        }
+
+        function suggestOptimizations() {
+            showNotification('Generating optimization suggestions...', 'info');
+            setTimeout(() => {
+                showNotification('5 optimization suggestions generated! Check the analytics panel.', 'success');
+            }, 1500);
+        }
+
+        function generateDeviceReport() {
+            showNotification('Generating device utilization report...', 'info');
+            setTimeout(() => {
+                showNotification('Device report generated successfully!', 'success');
+            }, 1500);
+        }
+
+        function viewOptimizationHistory() {
+            showNotification('Opening optimization history...', 'info');
+        }
+
+        // Navigation function
+        function navigateTo(page) {
+            // In a real application, this would navigate to the specified page
+            showNotification(`Navigating to ${page}...`, 'info');
         }
 
         // Detail view functions

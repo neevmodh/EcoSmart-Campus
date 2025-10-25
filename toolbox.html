@@ -26,6 +26,9 @@
             --admin-red: #DC143C;
             --settings-gray: #696969;
             --header-height: 80px;
+            --shadow-light: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-medium: 0 6px 20px rgba(0,0,0,0.12);
+            --shadow-heavy: 0 12px 25px rgba(0,0,0,0.15);
         }
 
         body {
@@ -47,7 +50,7 @@
             background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+            box-shadow: var(--shadow-heavy);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -91,6 +94,25 @@
             border-radius: 20px;
             transition: all 0.3s ease;
             font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a.active::after,
+        .nav-links a:hover::after {
+            width: 70%;
         }
 
         .nav-links a.active {
@@ -108,6 +130,12 @@
             background: rgba(255,255,255,0.1);
             padding: 6px 12px;
             border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: rgba(255,255,255,0.15);
         }
 
         .user-avatar {
@@ -132,6 +160,7 @@
         .dashboard-header {
             text-align: center;
             margin-bottom: 3rem;
+            position: relative;
         }
 
         .dashboard-title {
@@ -160,6 +189,37 @@
             margin: 0 auto;
         }
 
+        .search-bar {
+            max-width: 500px;
+            margin: 1.5rem auto 0;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 1rem;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
+        }
+
+        .search-bar i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
         /* Tools Grid */
         .tools-grid {
             display: grid;
@@ -172,16 +232,35 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-light);
             transition: all 0.3s ease;
             cursor: pointer;
             text-align: center;
             border-top: 4px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: inherit;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover::before {
+            transform: scaleX(1);
         }
 
         .tool-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-heavy);
         }
 
         .tool-card.probability {
@@ -215,6 +294,11 @@
             font-size: 2.2rem;
             margin: 0 auto 1.5rem;
             box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover .tool-icon {
+            transform: scale(1.1);
         }
 
         .tool-icon.probability {
@@ -280,7 +364,7 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-light);
             margin-bottom: 2rem;
         }
 
@@ -313,11 +397,30 @@
             transition: all 0.3s ease;
             cursor: pointer;
             border-left: 4px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-tool::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: inherit;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-tool:hover::before {
+            transform: scaleY(1);
         }
 
         .quick-tool:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-medium);
         }
 
         .quick-tool.probability {
@@ -339,6 +442,11 @@
         .quick-icon {
             font-size: 1.8rem;
             margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .quick-tool:hover .quick-icon {
+            transform: scale(1.2);
         }
 
         .quick-tool.probability .quick-icon {
@@ -368,7 +476,7 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-light);
         }
 
         .stats-grid {
@@ -384,11 +492,30 @@
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
         }
 
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-medium);
         }
 
         .stat-icon {
@@ -402,6 +529,11 @@
             color: white;
             font-size: 1.5rem;
             margin: 0 auto 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1);
         }
 
         .stat-value {
@@ -415,6 +547,126 @@
             font-size: 0.85rem;
             color: #666;
             font-weight: 600;
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 2rem;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .activity-icon.probability {
+            background: var(--probability-purple);
+        }
+
+        .activity-icon.graph {
+            background: var(--graph-teal);
+        }
+
+        .activity-icon.logic {
+            background: var(--logic-orange);
+        }
+
+        .activity-icon.admin {
+            background: var(--admin-red);
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .activity-details p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* Notifications */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--admin-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
         }
 
         /* Responsive */
@@ -476,7 +728,7 @@
                     <a href="toolbox.html" class="active">Toolbox</a>
                     <a href="reports.html">Reports</a>
                 </nav>
-                <div class="user-info">
+                <div class="user-info tooltip" data-tooltip="Tools Hub User">
                     <div class="user-avatar">TH</div>
                     <span>Tools</span>
                 </div>
@@ -493,12 +745,16 @@
                     <h2>Advanced Tools</h2>
                 </div>
                 <p class="dashboard-subtitle">Access specialized tools for system optimization and analysis</p>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for tools...">
+                    <i class="fas fa-search"></i>
+                </div>
             </div>
 
             <!-- Main Tools -->
             <div class="tools-grid">
                 <!-- Probability Calculator -->
-                <div class="tool-card probability">
+                <div class="tool-card probability" onclick="window.location.href='probability.html'">
                     <div class="tool-icon probability">
                         <i class="fas fa-chart-bar"></i>
                     </div>
@@ -512,7 +768,7 @@
                 </div>
 
                 <!-- Graph Theory Tools -->
-                <div class="tool-card graph">
+                <div class="tool-card graph" onclick="window.location.href='graph-tools.html'">
                     <div class="tool-icon graph">
                         <i class="fas fa-project-diagram"></i>
                     </div>
@@ -525,10 +781,22 @@
                     </a>
                 </div>
 
-                
+                <!-- Logic Editor -->
+                <div class="tool-card logic" onclick="window.location.href='logic-editor.html'">
+                    <div class="tool-icon logic">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="tool-title">
+                        <h3>Logic Editor</h3>
+                        <p>Conditional logic and automation</p>
+                    </div>
+                    <a href="logic-editor.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Open Tool
+                    </a>
+                </div>
 
                 <!-- Admin Panel -->
-                <div class="tool-card admin">
+                <div class="tool-card admin" onclick="window.location.href='admin.html'">
                     <div class="tool-icon admin">
                         <i class="fas fa-user-shield"></i>
                     </div>
@@ -542,7 +810,7 @@
                 </div>
 
                 <!-- Settings -->
-                <div class="tool-card settings">
+                <div class="tool-card settings" onclick="window.location.href='settings.html'">
                     <div class="tool-icon settings">
                         <i class="fas fa-cogs"></i>
                     </div>
@@ -553,6 +821,59 @@
                     <a href="settings.html" class="btn btn-primary">
                         <i class="fas fa-external-link-alt"></i> Open Tool
                     </a>
+                </div>
+
+                <!-- Data Visualizer -->
+                <div class="tool-card probability" onclick="window.location.href='data-visualizer.html'">
+                    <div class="tool-icon probability">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="tool-title">
+                        <h3>Data Visualizer</h3>
+                        <p>Interactive data visualization</p>
+                    </div>
+                    <a href="data-visualizer.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Open Tool
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <div class="section-title">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon probability">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Probability Analysis</h4>
+                            <p>Room occupancy calculation completed</p>
+                        </div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon graph">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Network Optimization</h4>
+                            <p>Energy flow paths optimized</p>
+                        </div>
+                        <div class="activity-time">5 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon logic">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Logic Rule Updated</h4>
+                            <p>Lighting automation rules modified</p>
+                        </div>
+                        <div class="activity-time">Yesterday</div>
+                    </div>
                 </div>
             </div>
 
@@ -599,7 +920,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-tools"></i>
                         </div>
-                        <div class="stat-value">5</div>
+                        <div class="stat-value">6</div>
                         <div class="stat-label">Tools</div>
                     </div>
                     <div class="stat-card" onclick="window.location.href='admin.html'">
@@ -629,19 +950,62 @@
     </section>
 
     <script>
-        // Simple hover effects
+        // Enhanced hover effects and interactions
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.tool-card, .quick-tool, .stat-card');
+            const cards = document.querySelectorAll('.tool-card, .quick-tool, .stat-card, .activity-item');
             
             cards.forEach(card => {
                 card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
+                    this.style.transform = this.classList.contains('tool-card') ? 'translateY(-5px)' : 'translateY(-3px)';
                 });
                 
                 card.addEventListener('mouseleave', function() {
                     this.style.transform = 'translateY(0)';
                 });
             });
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-bar input');
+            const toolCards = document.querySelectorAll('.tool-card');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                toolCards.forEach(card => {
+                    const title = card.querySelector('.tool-title h3').textContent.toLowerCase();
+                    const description = card.querySelector('.tool-title p').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+
+            // Simulate real-time stats updates
+            function updateStats() {
+                const stats = document.querySelectorAll('.stat-value');
+                
+                stats.forEach(stat => {
+                    const currentValue = parseInt(stat.textContent);
+                    if (!isNaN(currentValue)) {
+                        // Random small increment for demo purposes
+                        const increment = Math.floor(Math.random() * 3);
+                        stat.textContent = currentValue + increment;
+                    }
+                });
+            }
+            
+            // Update stats every 30 seconds
+            setInterval(updateStats, 30000);
+            
+            // Add notification badge to admin panel
+            const adminCard = document.querySelector('.tool-card.admin');
+            const badge = document.createElement('div');
+            badge.className = 'notification-badge';
+            badge.textContent = '2';
+            adminCard.appendChild(badge);
         });
     </script>
 </body>
