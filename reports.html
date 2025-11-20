@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSmart Campus - Reports & Export</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --leaf-green: #228B22;
+            --mint: #98FB98;
+            --light-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            --medium-shadow: 0 6px 20px rgba(46, 139, 87, 0.15);
+            --dark-shadow: 0 10px 30px rgba(46, 139, 87, 0.2);
+        }
+
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--medium-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-signup {
+            background: white;
+            color: var(--primary-green);
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-signup:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 2rem 0;
+            background: linear-gradient(rgba(248, 255, 248, 0.9), rgba(248, 255, 248, 0.9)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.05"><path d="M50,10 C70,10 90,25 90,50 C90,75 70,90 50,90 C30,90 10,75 10,50 C10,25 30,10 50,10 Z" fill="%23228B22"/></svg>');
+            background-size: 200px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .page-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-green);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .page-description {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: var(--text-dark);
+        }
+
+        /* Reports Section */
+        .reports-section {
+            margin: 2rem 0;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-green);
+            border-radius: 2px;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .report-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--light-shadow);
+            border-left: 4px solid var(--primary-green);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--medium-shadow);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .report-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-size: 1.5rem;
+        }
+
+        .report-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .report-description {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            flex-grow: 1;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-report {
+            padding: 6px 12px;
+            background: var(--secondary-green);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-report:hover {
+            background: var(--primary-green);
+        }
+
+        .btn-report.secondary {
+            background: var(--accent-green);
+            color: var(--text-dark);
+        }
+
+        .btn-report.secondary:hover {
+            background: var(--secondary-green);
+            color: white;
+        }
+
+        /* Date Range Selector */
+        .date-range-selector {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--light-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .date-range-title {
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .date-inputs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .date-input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .date-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .date-input-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-preset {
+            padding: 6px 12px;
+            background: var(--accent-green);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-preset:hover {
+            background: var(--secondary-green);
+            color: white;
+        }
+
+        .btn-preset.active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        /* Report Configuration */
+        .report-configuration {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--light-shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .config-group {
+            margin-bottom: 1rem;
+        }
+
+        .config-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .config-group select, .config-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* Mathematical Concepts */
+        .math-concepts {
+            margin: 3rem 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--light-shadow);
+        }
+
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .concept-card {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--secondary-green);
+            transition: transform 0.3s ease;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .concept-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+        }
+
+        .concept-icon {
+            color: var(--primary-green);
+        }
+
+        .formula {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            border: 1px solid #eee;
+        }
+
+        /* Report Preview */
+        .report-preview {
+            margin: 3rem 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--light-shadow);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background-color: var(--accent-green);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(144, 238, 144, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--dark-shadow);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--medium-shadow);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #DC143C;
+        }
+
+        .notification.warning {
+            background: #FFA500;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .date-inputs {
+                flex-direction: column;
+            }
+            
+            .preview-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" id="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>EcoSmart Campus</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="campus-layout.html">Campus Layout</a>
+                    <a href="analytics.html">Analytics</a>
+                    <a href="devices.html">Smart Control</a>
+                     
+                    <a href="reports.html" class="active">Reports</a>
+                </nav>
+                <div class="user-info">
+                    
+  <button class="btn btn-login" onclick="window.location.href='modal.html'">Business-Model</button>
+  
+</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Reports & Export</h1>
+            <p class="page-description">
+                Generate comprehensive reports, export data in multiple formats, and access environmental impact certificates.
+                All data is aggregated using mathematical models for accurate period-over-period analysis.
+            </p>
+        </div>
+    </section>
+
+    <!-- Date Range Selector -->
+    <section class="container">
+        <div class="date-range-selector">
+            <h3 class="date-range-title">Custom Date Range</h3>
+            <div class="date-inputs">
+                <div class="date-input-group">
+                    <label for="start-date">Start Date</label>
+                    <input type="date" id="start-date" value="2023-01-01">
+                </div>
+                <div class="date-input-group">
+                    <label for="end-date">End Date</label>
+                    <input type="date" id="end-date" value="2023-12-31">
+                </div>
+            </div>
+            <div class="preset-buttons">
+                <button class="btn-preset" data-days="7">Last 7 Days</button>
+                <button class="btn-preset" data-days="30">Last 30 Days</button>
+                <button class="btn-preset" data-days="90">Last Quarter</button>
+                <button class="btn-preset" data-days="365">Last Year</button>
+                <button class="btn-preset" data-preset="ytd">Year to Date</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Report Configuration -->
+    <section class="container">
+        <div class="report-configuration" id="reportConfiguration">
+            <h3 class="section-title">Report Configuration</h3>
+            <div class="config-grid">
+                <div class="config-group">
+                    <label for="report-type">Report Type</label>
+                    <select id="report-type">
+                        <option value="energy">Energy Consumption</option>
+                        <option value="cost">Cost Analysis</option>
+                        <option value="carbon">Carbon Footprint</option>
+                        <option value="efficiency">Efficiency Metrics</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="chart-type">Chart Type</label>
+                    <select id="chart-type">
+                        <option value="bar">Bar Chart</option>
+                        <option value="line">Line Chart</option>
+                        <option value="pie">Pie Chart</option>
+                        <option value="area">Area Chart</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="data-granularity">Data Granularity</label>
+                    <select id="data-granularity">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="include-comparison">Include Comparison</label>
+                    <select id="include-comparison">
+                        <option value="no">No</option>
+                        <option value="previous-period">Previous Period</option>
+                        <option value="previous-year">Previous Year</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <button class="btn-report" id="apply-config">Apply Configuration</button>
+                <button class="btn-report secondary" id="reset-config">Reset to Default</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reports Section -->
+    <section class="container reports-section">
+        <h2 class="section-title">Report Generator</h2>
+        <div class="reports-grid">
+            <!-- Report Generator Card -->
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="report-title">Report Generator</h3>
+                </div>
+                <p class="report-description">
+                    Create custom reports with aggregated data for any date range. Select specific metrics and visualization types.
+                </p>
+                <div class="report-actions">
+                    <button class="btn-report" id="generate-report">Generate Report</button>
+                    <button class="btn-report" id="save-template">Save Template</button>
+                    <button class="btn-report" id="schedule-report">Schedule</button>
+                </div>
+            </div>
+
+            <!-- Savings Certificates Card -->
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3 class="report-title">Savings Certificates</h3>
+                </div>
+                <p class="report-description">
+                    Generate environmental impact certificates showing CO₂ reduction, energy savings, and sustainability achievements.
+                </p>
+                <div class="report-actions">
+                    <button class="btn-report" id="create-certificate">Create Certificate</button>
+                    <button class="btn-report" id="view-certificates">View History</button>
+                </div>
+            </div>
+
+            <!-- Data Export Card -->
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3 class="report-title">Data Export</h3>
+                </div>
+                <p class="report-description">
+                    Export your data in multiple formats for further analysis or external reporting requirements.
+                </p>
+                <div class="report-actions">
+                    <button class="btn-report" data-format="csv">CSV Export</button>
+                    <button class="btn-report" data-format="pdf">PDF Export</button>
+                    <button class="btn-report" data-format="excel">Excel Export</button>
+                </div>
+            </div>
+
+            <!-- Compliance Reports Card -->
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3 class="report-title">Compliance Reports</h3>
+                </div>
+                <p class="report-description">
+                    Generate regulatory compliance documentation for environmental standards and energy consumption reporting.
+                </p>
+                <div class="report-actions">
+                    <button class="btn-report" id="generate-compliance">Generate Compliance</button>
+                    <button class="btn-report" id="view-templates">View Templates</button>
+                </div>
+            </div>
+
+            <!-- Audit Logs Card -->
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="report-title">Audit Logs</h3>
+                </div>
+                <p class="report-description">
+                    Access complete system change history, user actions, and data modification records for auditing purposes.
+                </p>
+                <div class="report-actions">
+                    <button class="btn-report" id="view-logs">View Logs</button>
+                    <button class="btn-report" id="export-logs">Export Logs</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Report Preview Section -->
+    <section class="container report-preview">
+        <div class="preview-header">
+            <h2 class="section-title">Report Preview</h2>
+            <div>
+                <button class="btn-report" id="refresh-preview">Refresh</button>
+                <button class="btn-report" id="export-preview">Export Preview</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="reportChart"></canvas>
+        </div>
+        <div class="data-table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Energy Consumption (kWh)</th>
+                        <th>Cost Savings ($)</th>
+                        <th>CO₂ Reduction (kg)</th>
+                        <th>Efficiency (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Mathematical Concepts Section -->
+    <section class="container math-concepts">
+        <h2 class="section-title">Mathematical Concepts Used</h2>
+        <div class="concepts-grid">
+            <div class="concept-card">
+                <h4><i class="fas fa-function concept-icon"></i> Aggregation Functions</h4>
+                <p>Data is aggregated using summation functions to create comprehensive reports:</p>
+                <div class="formula">∑f(r,t) = Σ<sub>i=1</sub><sup>n</sup> f(r<sub>i</sub>, t<sub>i</sub>)</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-project-diagram concept-icon"></i> Recurrence Relations</h4>
+                <p>Period-over-period analysis uses recurrence relations to track trends:</p>
+                <div class="formula">P<sub>n</sub> = P<sub>n-1</sub> + ΔP</div>
+            </div>
+            <div class="concept-card">
+                <h4><i class="fas fa-chart-bar concept-icon"></i> Statistical Analysis</h4>
+                <p>Statistical methods are applied to identify patterns and anomalies:</p>
+                <div class="formula">μ = (1/n) Σ<sub>i=1</sub><sup>n</sup> x<sub>i</sub></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EcoSmart Campus</h3>
+                    <p>Transforming campus energy management through mathematical optimization and sustainable practices.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="analytics.html">Analytics</a></li>
+                        <li><a href="devices.html">Device Control</a></li>
+                        <li><a href="reports.html">Reports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Mathematical Tools</h3>
+                    <ul class="footer-links">
+                        <li><a href="campus-layout.html">Graph Theory</a></li>
+                        <li><a href="analytics.html">Probability Calculator</a></li>
+                        <li><a href="schedules.html">Boolean Logic Editor</a></li>
+                        <li><a href="analytics.html">Recurrence Relations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@ecosmart.edu</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +1 (555) 123-4567</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> Campus Energy Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 EcoSmart Campus Energy Optimization System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-text">Report generated successfully!</span>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="modal" id="certificateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Environmental Impact Certificate</h3>
+                <button class="close-modal" id="closeCertificateModal">&times;</button>
+            </div>
+            <div id="certificateContent">
+                <!-- Certificate content will be generated here -->
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <button class="btn-report" id="downloadCertificate">Download Certificate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Schedule Report Generation</h3>
+                <button class="close-modal" id="closeScheduleModal">&times;</button>
+            </div>
+            <div>
+                <div class="date-input-group" style="margin-bottom: 1rem;">
+                    <label for="schedule-frequency">Frequency</label>
+                    <select id="schedule-frequency" class="date-input-group input" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+                <div class="date-input-group" style="margin-bottom: 1rem;">
+                    <label for="schedule-time">Time</label>
+                    <input type="time" id="schedule-time" class="date-input-group input" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="date-input-group" style="margin-bottom: 1rem;">
+                    <label for="schedule-email">Email Recipients</label>
+                    <input type="text" id="schedule-email" class="date-input-group input" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Enter email addresses separated by commas">
+                </div>
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button class="btn-report" id="saveSchedule">Save Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Progress Modal -->
+    <div class="modal" id="exportProgressModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Exporting Data</h3>
+                <button class="close-modal" id="closeExportModal">&times;</button>
+            </div>
+            <div>
+                <p id="exportStatus">Preparing data for export...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="exportProgress"></div>
+                </div>
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button class="btn-report" id="cancelExport" style="display: none;">Cancel Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation function
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = 'notification';
+            
+            if (type !== 'success') {
+                notification.classList.add(type);
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Date range functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date values
+            const today = new Date();
+            const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+            
+            document.getElementById('start-date').valueAsDate = oneYearAgo;
+            document.getElementById('end-date').valueAsDate = today;
+            
+            // Add functionality to preset buttons
+            const presetButtons = document.querySelectorAll('.btn-preset');
+            presetButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    presetButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const preset = this.getAttribute('data-preset');
+                    const days = this.getAttribute('data-days');
+                    let startDate = new Date();
+                    
+                    if (days) {
+                        startDate.setDate(today.getDate() - parseInt(days));
+                    } else if (preset === 'ytd') {
+                        startDate = new Date(today.getFullYear(), 0, 1);
+                    }
+                    
+                    document.getElementById('start-date').valueAsDate = startDate;
+                    document.getElementById('end-date').valueAsDate = today;
+                    
+                    showNotification(`Date range set to ${this.textContent}`);
+                    updateReportPreview();
+                });
+            });
+
+            // Logo click handler
+            document.getElementById('logo').addEventListener('click', function() {
+                navigateTo('index.html');
+            });
+
+            // Generate report button
+            document.getElementById('generate-report').addEventListener('click', function() {
+                document.getElementById('reportConfiguration').style.display = 'block';
+                showNotification('Configure your report settings');
+            });
+
+            // Apply configuration button
+            document.getElementById('apply-config').addEventListener('click', function() {
+                document.getElementById('reportConfiguration').style.display = 'none';
+                showNotification('Report configuration applied!');
+                updateReportPreview();
+            });
+
+            // Reset configuration button
+            document.getElementById('reset-config').addEventListener('click', function() {
+                document.getElementById('report-type').value = 'energy';
+                document.getElementById('chart-type').value = 'bar';
+                document.getElementById('data-granularity').value = 'monthly';
+                document.getElementById('include-comparison').value = 'no';
+                showNotification('Configuration reset to defaults');
+            });
+
+            // Save template button
+            document.getElementById('save-template').addEventListener('click', function() {
+                const templateName = prompt('Enter a name for this template:');
+                if (templateName) {
+                    showNotification(`Report template "${templateName}" saved successfully!`);
+                }
+            });
+
+            // Schedule report button
+            document.getElementById('schedule-report').addEventListener('click', function() {
+                document.getElementById('scheduleModal').style.display = 'flex';
+            });
+
+            // Create certificate button
+            document.getElementById('create-certificate').addEventListener('click', function() {
+                generateCertificate();
+                document.getElementById('certificateModal').style.display = 'flex';
+            });
+
+            // View certificates button
+            document.getElementById('view-certificates').addEventListener('click', function() {
+                showNotification('Opening certificate history...');
+                // In a real application, this would open a new view or modal with certificate history
+                setTimeout(() => {
+                    showNotification('Certificate history loaded');
+                }, 1000);
+            });
+
+            // Data export buttons
+            document.querySelectorAll('.btn-report[data-format]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const format = this.getAttribute('data-format');
+                    simulateExport(format);
+                });
+            });
+
+            // Compliance report buttons
+            document.getElementById('generate-compliance').addEventListener('click', function() {
+                showNotification('Generating compliance report...');
+                setTimeout(() => {
+                    showNotification('Compliance report generated successfully!');
+                }, 1500);
+            });
+
+            document.getElementById('view-templates').addEventListener('click', function() {
+                showNotification('Opening compliance templates...');
+                // In a real application, this would open a modal with template options
+            });
+
+            // Audit log buttons
+            document.getElementById('view-logs').addEventListener('click', function() {
+                showNotification('Opening audit logs...');
+                // In a real application, this would open a new view with audit logs
+            });
+
+            document.getElementById('export-logs').addEventListener('click', function() {
+                simulateExport('csv', 'audit-logs');
+            });
+
+            // Preview buttons
+            document.getElementById('refresh-preview').addEventListener('click', function() {
+                updateReportPreview();
+                showNotification('Report preview updated!');
+            });
+
+            document.getElementById('export-preview').addEventListener('click', function() {
+                simulateExport('pdf', 'current-preview');
+            });
+
+            // Modal close buttons
+            document.getElementById('closeCertificateModal').addEventListener('click', function() {
+                document.getElementById('certificateModal').style.display = 'none';
+            });
+
+            document.getElementById('closeScheduleModal').addEventListener('click', function() {
+                document.getElementById('scheduleModal').style.display = 'none';
+            });
+
+            document.getElementById('closeExportModal').addEventListener('click', function() {
+                document.getElementById('exportProgressModal').style.display = 'none';
+            });
+
+            // Save schedule button
+            document.getElementById('saveSchedule').addEventListener('click', function() {
+                const frequency = document.getElementById('schedule-frequency').value;
+                const time = document.getElementById('schedule-time').value;
+                const emails = document.getElementById('schedule-email').value;
+                
+                if (!emails) {
+                    showNotification('Please enter at least one email address', 'warning');
+                    return;
+                }
+                
+                showNotification(`Report scheduled for ${frequency} at ${time}`);
+                document.getElementById('scheduleModal').style.display = 'none';
+            });
+
+            // Download certificate button
+            document.getElementById('downloadCertificate').addEventListener('click', function() {
+                showNotification('Certificate downloaded successfully!');
+                document.getElementById('certificateModal').style.display = 'none';
+            });
+
+            // Cancel export button
+            document.getElementById('cancelExport').addEventListener('click', function() {
+                document.getElementById('exportProgressModal').style.display = 'none';
+                showNotification('Export cancelled', 'warning');
+            });
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                }
+            });
+
+            // Initialize report preview
+            updateReportPreview();
+        });
+
+        // Generate certificate content
+        function generateCertificate() {
+            const certificateContent = document.getElementById('certificateContent');
+            const today = new Date().toLocaleDateString();
+            
+            certificateContent.innerHTML = `
+                <div style="text-align: center; border: 2px solid var(--primary-green); padding: 2rem; border-radius: 8px;">
+                    <h2 style="color: var(--primary-green); margin-bottom: 1rem;">Environmental Impact Certificate</h2>
+                    <p style="margin-bottom: 1rem;">This certifies that EcoSmart Campus has achieved the following environmental impact:</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+                        <div style="text-align: center;">
+                            <h3 style="color: var(--primary-green); font-size: 2rem;">2.4 t</h3>
+                            <p>CO₂ Reduction</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <h3 style="color: var(--primary-green); font-size: 2rem;">$5,240</h3>
+                            <p>Cost Savings</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 1.5rem 0;">
+                        <p>Equivalent to planting <strong>40 trees</strong> or removing <strong>2 cars</strong> from the road for a year.</p>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1rem;">
+                        <p>Issued on: ${today}</p>
+                        <p>Certificate ID: EC-${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Simulate export process with progress bar
+        function simulateExport(format, type = 'data') {
+            const modal = document.getElementById('exportProgressModal');
+            const progressBar = document.getElementById('exportProgress');
+            const statusText = document.getElementById('exportStatus');
+            const cancelButton = document.getElementById('cancelExport');
+            
+            modal.style.display = 'flex';
+            progressBar.style.width = '0%';
+            statusText.textContent = 'Preparing data for export...';
+            cancelButton.style.display = 'inline-block';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    statusText.textContent = `${format.toUpperCase()} export completed!`;
+                    cancelButton.style.display = 'none';
+                    
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        showNotification(`${format.toUpperCase()} export completed!`);
+                    }, 1000);
+                }
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    statusText.textContent = 'Collecting data...';
+                } else if (progress < 60) {
+                    statusText.textContent = 'Formatting data...';
+                } else if (progress < 90) {
+                    statusText.textContent = 'Generating file...';
+                } else {
+                    statusText.textContent = 'Finalizing export...';
+                }
+            }, 200);
+        }
+
+        // Update report preview with chart and table
+        function updateReportPreview() {
+            // Get configuration values
+            const reportType = document.getElementById('report-type').value;
+            const chartType = document.getElementById('chart-type').value;
+            const granularity = document.getElementById('data-granularity').value;
+            const comparison = document.getElementById('include-comparison').value;
+            
+            // Generate sample data for the chart
+            const labels = [];
+            const energyData = [];
+            const savingsData = [];
+            const comparisonData = [];
+            
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+            
+            // Generate labels based on granularity
+            const currentDate = new Date(startDate);
+            let dateIncrement;
+            
+            switch(granularity) {
+                case 'daily':
+                    dateIncrement = () => currentDate.setDate(currentDate.getDate() + 1);
+                    break;
+                case 'weekly':
+                    dateIncrement = () => currentDate.setDate(currentDate.getDate() + 7);
+                    break;
+                case 'monthly':
+                    dateIncrement = () => currentDate.setMonth(currentDate.getMonth() + 1);
+                    break;
+                case 'quarterly':
+                    dateIncrement = () => currentDate.setMonth(currentDate.getMonth() + 3);
+                    break;
+            }
+            
+            // Generate data points
+            while (currentDate <= endDate) {
+                let label;
+                switch(granularity) {
+                    case 'daily':
+                        label = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        break;
+                    case 'weekly':
+                        label = `Week ${Math.ceil((currentDate.getDate() + (currentDate.getDay() || 7) - 1) / 7)}`;
+                        break;
+                    case 'monthly':
+                        label = currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                        break;
+                    case 'quarterly':
+                        const quarter = Math.floor(currentDate.getMonth() / 3) + 1;
+                        label = `Q${quarter} ${currentDate.getFullYear()}`;
+                        break;
+                }
+                
+                labels.push(label);
+                energyData.push(Math.floor(Math.random() * 1000) + 500);
+                savingsData.push(Math.floor(Math.random() * 200) + 50);
+                
+                if (comparison !== 'no') {
+                    comparisonData.push(Math.floor(Math.random() * 1000) + 400);
+                }
+                
+                dateIncrement();
+            }
+            
+            // Update the chart
+            const ctx = document.getElementById('reportChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.reportChartInstance) {
+                window.reportChartInstance.destroy();
+            }
+            
+            // Determine datasets based on report type
+            let datasets = [];
+            
+            if (reportType === 'energy') {
+                datasets = [
+                    {
+                        label: 'Energy Consumption (kWh)',
+                        data: energyData,
+                        backgroundColor: 'rgba(46, 139, 87, 0.7)',
+                        borderColor: 'rgba(46, 139, 87, 1)',
+                        borderWidth: 1
+                    }
+                ];
+                
+                if (comparison !== 'no') {
+                    const comparisonLabel = comparison === 'previous-period' ? 'Previous Period' : 'Previous Year';
+                    datasets.push({
+                        label: comparisonLabel,
+                        data: comparisonData,
+                        backgroundColor: 'rgba(144, 238, 144, 0.7)',
+                        borderColor: 'rgba(144, 238, 144, 1)',
+                        borderWidth: 1
+                    });
+                }
+            } else if (reportType === 'cost') {
+                datasets = [
+                    {
+                        label: 'Cost Savings ($)',
+                        data: savingsData,
+                        backgroundColor: 'rgba(46, 139, 87, 0.7)',
+                        borderColor: 'rgba(46, 139, 87, 1)',
+                        borderWidth: 1
+                    }
+                ];
+            } else if (reportType === 'carbon') {
+                const carbonData = energyData.map(val => Math.round(val * 0.5));
+                datasets = [
+                    {
+                        label: 'CO₂ Reduction (kg)',
+                        data: carbonData,
+                        backgroundColor: 'rgba(46, 139, 87, 0.7)',
+                        borderColor: 'rgba(46, 139, 87, 1)',
+                        borderWidth: 1
+                    }
+                ];
+            } else if (reportType === 'efficiency') {
+                const efficiencyData = energyData.map(val => Math.round((1 - val/1500) * 100));
+                datasets = [
+                    {
+                        label: 'Efficiency (%)',
+                        data: efficiencyData,
+                        backgroundColor: 'rgba(46, 139, 87, 0.7)',
+                        borderColor: 'rgba(46, 139, 87, 1)',
+                        borderWidth: 1
+                    }
+                ];
+            }
+            
+            // Add savings as a line if it's not the primary dataset
+            if (reportType !== 'cost') {
+                datasets.push({
+                    label: 'Cost Savings ($)',
+                    data: savingsData,
+                    backgroundColor: 'rgba(144, 238, 144, 0.7)',
+                    borderColor: 'rgba(144, 238, 144, 1)',
+                    borderWidth: 1,
+                    type: chartType === 'bar' ? 'line' : chartType,
+                    yAxisID: 'y1'
+                });
+            }
+            
+            window.reportChartInstance = new Chart(ctx, {
+                type: chartType === 'bar' || chartType === 'line' ? chartType : 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: getYAxisLabel(reportType)
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost Savings ($)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update the table
+            const tableBody = document.getElementById('reportTableBody');
+            tableBody.innerHTML = '';
+            
+            // Generate sample table data
+            for (let i = 0; i < Math.min(10, labels.length); i++) {
+                const row = document.createElement('tr');
+                
+                let energyValue, savingsValue, carbonValue, efficiencyValue;
+                
+                if (i < energyData.length) {
+                    energyValue = energyData[i];
+                    savingsValue = savingsData[i];
+                    carbonValue = Math.round(energyValue * 0.5);
+                    efficiencyValue = Math.round((1 - energyValue/1500) * 100);
+                } else {
+                    // If we don't have enough data points, generate random values
+                    energyValue = Math.floor(Math.random() * 1000) + 500;
+                    savingsValue = Math.floor(Math.random() * 200) + 50;
+                    carbonValue = Math.round(energyValue * 0.5);
+                    efficiencyValue = Math.round((1 - energyValue/1500) * 100);
+                }
+                
+                row.innerHTML = `
+                    <td>${labels[i]}</td>
+                    <td>${energyValue}</td>
+                    <td>${savingsValue}</td>
+                    <td>${carbonValue}</td>
+                    <td>${efficiencyValue}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Helper function to get Y-axis label based on report type
+        function getYAxisLabel(reportType) {
+            switch(reportType) {
+                case 'energy': return 'Energy Consumption (kWh)';
+                case 'cost': return 'Cost Savings ($)';
+                case 'carbon': return 'CO₂ Reduction (kg)';
+                case 'efficiency': return 'Efficiency (%)';
+                default: return 'Value';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Auto Control - EcoSmart Campus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --leaf-green: #228B22;
+            --mint: #98FB98;
+            --warning: #FFA500;
+            --danger: #DC143C;
+            --light-green: #E8F5E9;
+            --dark-green: #1B5E20;
+            --gradient-green: linear-gradient(135deg, #2E8B57 0%, #4CAF50 100%);
+            --gradient-light: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            --shadow: 0 4px 12px rgba(46, 139, 87, 0.1);
+            --shadow-hover: 0 6px 16px rgba(46, 139, 87, 0.15);
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.4;
+            font-size: 0.85rem;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--gradient-green);
+            color: white;
+            padding: 0.6rem 0;
+            box-shadow: 0 2px 10px rgba(46, 139, 87, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 1.6rem;
+        }
+
+        .logo h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 0.8rem;
+            width: 180px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 0.6rem 0.8rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+        }
+
+        .user-dropdown a:hover {
+            background: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            padding: 1.2rem 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-title i {
+            color: var(--primary-green);
+            font-size: 1.8rem;
+        }
+
+        .dashboard-title h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .card-title i {
+            color: var(--primary-green);
+            font-size: 1.2rem;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Filters Section */
+        .filters-card {
+            grid-column: 1;
+        }
+
+        .filter-section {
+            margin-bottom: 1rem;
+        }
+
+        .filter-section h4 {
+            margin-bottom: 0.6rem;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            background: var(--light-green);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.8rem;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .filter-btn:hover {
+            background: var(--accent-green);
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        /* Devices Grid */
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .device-card {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid var(--accent-green);
+            transition: all 0.2s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.1);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .device-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .device-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .device-status:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-on {
+            background: var(--leaf-green);
+        }
+
+        .status-on:after {
+            background: var(--leaf-green);
+        }
+
+        .status-off {
+            background: #ccc;
+        }
+
+        .status-warning {
+            background: var(--warning);
+        }
+
+        .status-warning:after {
+            background: var(--warning);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(2);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+        .device-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .device-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            color: #666;
+            margin-bottom: 0.1rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .device-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 0.6rem;
+        }
+
+        .device-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.75rem;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .device-btn-on {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .device-btn-off {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .device-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Schedule Controls */
+        .schedule-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 0.8rem;
+        }
+
+        .schedule-btn {
+            padding: 8px 14px;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .schedule-btn:hover {
+            background: var(--secondary-green);
+        }
+
+        .schedule-btn.secondary {
+            background: var(--light-green);
+            color: var(--text-dark);
+        }
+
+        /* Schedule Table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .schedule-table th, .schedule-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .schedule-table th {
+            background: var(--light-green);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(46, 139, 87, 0.05);
+        }
+
+        .schedule-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(46, 139, 87, 0.1);
+            color: var(--primary-green);
+        }
+
+        .status-inactive {
+            background: rgba(220, 20, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .schedule-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.75rem;
+        }
+
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--light-green);
+            color: var(--text-dark);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Emergency Controls */
+        .emergency-controls {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .emergency-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .emergency-btn.emergency {
+            background: var(--danger);
+            color: white;
+        }
+
+        .emergency-btn.safe {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .emergency-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* AI Schedule Section */
+        .ai-schedule {
+            background: var(--light-green);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .ai-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .ai-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .ai-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .ai-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .ai-slider {
+            background-color: var(--primary-green);
+        }
+
+        input:checked + .ai-slider:before {
+            transform: translateX(26px);
+        }
+
+        .ai-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .ai-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-label {
+            color: #666;
+            margin-bottom: 0.2rem;
+        }
+
+        .ai-value {
+            font-weight: 600;
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-green);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            
+            .dashboard-header {
+                padding: 0.8rem;
+            }
+            
+            .dashboard-title h2 {
+                font-size: 1.2rem;
+            }
+            
+            .devices-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .device-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-controls {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .emergency-controls {
+                flex-direction: column;
+            }
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 0.8rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.6rem;
+            color: white;
+        }
+
+        .stat-online {
+            background: var(--primary-green);
+        }
+
+        .stat-offline {
+            background: #ccc;
+        }
+
+        .stat-warning {
+            background: var(--warning);
+        }
+
+        .stat-energy {
+            background: var(--secondary-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>EcoSmart Campus</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="campus-layout.html">Campus Layout</a>
+                    <a href="analytics.html">Analytics</a>
+                    <a href="devices.html" class="active">Smart Control</a>
+                    <a href="reports.html">Reports</a>
+                </nav>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <span>John Doe</span>
+                    <div class="user-dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard -->
+    <section class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <i class="fas fa-robot"></i>
+                    <h2>Smart Auto Control System</h2>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="schedule-btn" id="createScheduleBtn">
+                        <i class="fas fa-plus"></i> New Schedule
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon stat-online">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <div class="stat-value" id="onlineCount">0</div>
+                    <div class="stat-label">Devices Online</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-offline">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                    <div class="stat-value" id="offlineCount">0</div>
+                    <div class="stat-label">Devices Offline</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value" id="warningCount">0</div>
+                    <div class="stat-label">Devices with Issues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-energy">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-value" id="energySaved">0 kWh</div>
+                    <div class="stat-label">Energy Saved Today</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <!-- Filters Section -->
+                <div class="card filters-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-filter"></i>
+                            <h3>Control Filters</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h4><i class="fas fa-building"></i> Building</h4>
+                        <div class="filter-options">
+                            <button class="filter-btn active" data-filter="building" data-value="all">All</button>
+                            <button class="filter-btn" data-filter="building" data-value="A">A</button>
+                            <button class="filter-btn" data-filter="building" data-value="B">B</button>
+                            <button class="filter-btn" data-filter="building" data-value="C">C</button>
+                            <button class="filter-btn" data-filter="building" data-value="D">D</button>
+                            <button class="filter-btn" data-filter="building" data-value="E">E</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h4><i class="fas fa-door-open"></i> Room Type</h4>
+                        <div class="filter-options">
+                            <button class="filter-btn active" data-filter="roomType" data-value="all">All</button>
+                            <button class="filter-btn" data-filter="roomType" data-value="classroom">Class</button>
+                            <button class="filter-btn" data-filter="roomType" data-value="lab">Lab</button>
+                            <button class="filter-btn" data-filter="roomType" data-value="office">Office</button>
+                            <button class="filter-btn" data-filter="roomType" data-value="library">Library</button>
+                            <button class="filter-btn" data-filter="roomType" data-value="hallway">Hallway</button>
+                            <button class="filter-btn" data-filter="roomType" data-value="auditorium">Auditorium</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h4><i class="fas fa-plug"></i> Device Type</h4>
+                        <div class="filter-options">
+                            <button class="filter-btn active" data-filter="deviceType" data-value="all">All</button>
+                            <button class="filter-btn" data-filter="deviceType" data-value="light">Light</button>
+                            <button class="filter-btn" data-filter="deviceType" data-value="ac">AC</button>
+                            <button class="filter-btn" data-filter="deviceType" data-value="computer">Comp</button>
+                            <button class="filter-btn" data-filter="deviceType" data-value="projector">Proj</button>
+                            <button class="filter-btn" data-filter="deviceType" data-value="fan">Fan</button>
+                            <button class="filter-btn" data-filter="deviceType" data-value="printer">Printer</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h4><i class="fas fa-bolt"></i> Voltage</h4>
+                        <div class="filter-options">
+                            <button class="filter-btn active" data-filter="voltage" data-value="all">All</button>
+                            <button class="filter-btn" data-filter="voltage" data-value="low">Low</button>
+                            <button class="filter-btn" data-filter="voltage" data-value="medium">Med</button>
+                            <button class="filter-btn" data-filter="voltage" data-value="high">High</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h4><i class="fas fa-search"></i> Search</h4>
+                        <input type="text" class="filter-input" id="deviceSearch" placeholder="Device ID, name...">
+                    </div>
+                    
+                    <div class="emergency-controls">
+                        <button class="emergency-btn emergency" id="emergencyShutdown">
+                            <i class="fas fa-exclamation-triangle"></i> Emergency
+                        </button>
+                        <button class="emergency-btn safe" id="safeMode">
+                            <i class="fas fa-shield-alt"></i> Safe Mode
+                        </button>
+                    </div>
+                    
+                    <div class="ai-schedule">
+                        <div class="ai-header">
+                            <div class="ai-title">
+                                <i class="fas fa-brain"></i> AI Auto-Schedule
+                            </div>
+                            <label class="ai-toggle">
+                                <input type="checkbox" id="aiToggle" checked>
+                                <span class="ai-slider"></span>
+                            </label>
+                        </div>
+                        <div class="ai-details">
+                            <div class="ai-detail">
+                                <div class="ai-label">Optimization</div>
+                                <div class="ai-value">High Efficiency</div>
+                            </div>
+                            <div class="ai-detail">
+                                <div class="ai-label">Next Update</div>
+                                <div class="ai-value">Tomorrow 2:00 AM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Devices Grid -->
+                <div class="devices-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-laptop-house"></i>
+                                <h3>Controlled Devices</h3>
+                            </div>
+                            <div class="device-summary">
+                                <span id="deviceSummary">0 Devices | 0 Off | 0 Issues</span>
+                            </div>
+                        </div>
+                        <div class="devices-grid" id="devicesGrid">
+                            <!-- Device cards will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Automation Schedules</h3>
+                    </div>
+                </div>
+                <div class="schedule-controls">
+                    <button class="schedule-btn" id="bulkEnable">
+                        <i class="fas fa-play"></i> Enable All
+                    </button>
+                    <button class="schedule-btn secondary" id="bulkDisable">
+                        <i class="fas fa-pause"></i> Disable All
+                    </button>
+                    <button class="schedule-btn secondary" id="exportSchedules">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Target</th>
+                            <th>Time/Trigger</th>
+                            <th>Action</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <!-- Schedule rows will be generated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Schedule Modal -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Create New Schedule</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Schedule Name</label>
+                    <input type="text" class="form-control" id="scheduleName" placeholder="Enter schedule name">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Target Devices</label>
+                        <select class="form-control" id="targetDevices">
+                            <option value="all">All Devices</option>
+                            <option value="building-a">Building A Only</option>
+                            <option value="classrooms">All Classrooms</option>
+                            <option value="lights">All Lights</option>
+                            <option value="ac">All AC Units</option>
+                            <option value="specific">Specific Devices</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Action</label>
+                        <select class="form-control" id="scheduleAction">
+                            <option value="turn-on">Turn On</option>
+                            <option value="turn-off">Turn Off</option>
+                            <option value="dim">Dim Lights</option>
+                            <option value="adjust-temp">Adjust Temperature</option>
+                            <option value="power-save">Power Save Mode</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-control" id="startTime" value="08:00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Time</label>
+                        <input type="time" class="form-control" id="endTime" value="17:00">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Days of Week</label>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-day="mon">Mon</button>
+                        <button class="filter-btn active" data-day="tue">Tue</button>
+                        <button class="filter-btn active" data-day="wed">Wed</button>
+                        <button class="filter-btn active" data-day="thu">Thu</button>
+                        <button class="filter-btn active" data-day="fri">Fri</button>
+                        <button class="filter-btn" data-day="sat">Sat</button>
+                        <button class="filter-btn" data-day="sun">Sun</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Trigger Conditions</label>
+                    <select class="form-control" id="triggerCondition">
+                        <option value="none">No Additional Conditions</option>
+                        <option value="occupancy">When Occupancy Detected</option>
+                        <option value="temperature">When Temperature Above/Below</option>
+                        <option value="daylight">Based on Daylight</option>
+                        <option value="power-usage">When Power Usage Exceeds</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelSchedule">Cancel</button>
+                    <button class="btn btn-primary" id="saveSchedule">Save Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <strong id="notificationTitle">System Updated</strong>
+            <p id="notificationMessage">Smart control settings have been applied.</p>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced device data with more devices and detailed information
+        const deviceData = [
+            { id: 1, name: "Light", type: "light", location: "Library", room: "A101", building: "A", roomType: "library", status: "on", power: 120, voltage: 110, lastMaintenance: "2023-10-15", energySaved: 15 },
+            { id: 2, name: "AC", type: "ac", location: "Classroom A1", room: "A102", building: "A", roomType: "classroom", status: "on", power: 1500, voltage: 220, lastMaintenance: "2023-09-20", energySaved: 120 },
+            { id: 3, name: "Fan", type: "fan", location: "Lab B2", room: "B201", building: "B", roomType: "lab", status: "off", power: 75, voltage: 110, lastMaintenance: "2023-11-05", energySaved: 8 },
+            { id: 4, name: "Computer", type: "computer", location: "Office C3", room: "C301", building: "C", roomType: "office", status: "on", power: 200, voltage: 110, lastMaintenance: "2023-10-28", energySaved: 25 },
+            { id: 5, name: "Projector", type: "projector", location: "Auditorium", room: "A201", building: "A", roomType: "auditorium", status: "warning", power: 300, voltage: 110, lastMaintenance: "2023-08-15", energySaved: 18 },
+            { id: 6, name: "Light", type: "light", location: "Hallway D4", room: "D401", building: "D", roomType: "hallway", status: "on", power: 100, voltage: 110, lastMaintenance: "2023-11-10", energySaved: 12 },
+            { id: 7, name: "AC", type: "ac", location: "Library", room: "A101", building: "A", roomType: "library", status: "on", power: 1800, voltage: 220, lastMaintenance: "2023-09-12", energySaved: 150 },
+            { id: 8, name: "Computer", type: "computer", location: "Lab B2", room: "B201", building: "B", roomType: "lab", status: "off", power: 180, voltage: 110, lastMaintenance: "2023-10-22", energySaved: 22 },
+            { id: 9, name: "Light", type: "light", location: "Classroom A2", room: "A103", building: "A", roomType: "classroom", status: "on", power: 110, voltage: 110, lastMaintenance: "2023-11-01", energySaved: 14 },
+            { id: 10, name: "Fan", type: "fan", location: "Office C4", room: "C302", building: "C", roomType: "office", status: "on", power: 80, voltage: 110, lastMaintenance: "2023-10-30", energySaved: 9 },
+            { id: 11, name: "Projector", type: "projector", location: "Classroom A1", room: "A102", building: "A", roomType: "classroom", status: "on", power: 250, voltage: 110, lastMaintenance: "2023-09-25", energySaved: 20 },
+            { id: 12, name: "AC", type: "ac", location: "Auditorium", room: "A201", building: "A", roomType: "auditorium", status: "warning", power: 2000, voltage: 220, lastMaintenance: "2023-07-18", energySaved: 160 },
+            { id: 13, name: "Light", type: "light", location: "Library", room: "A101", building: "A", roomType: "library", status: "on", power: 120, voltage: 110, lastMaintenance: "2023-10-15", energySaved: 15 },
+            { id: 14, name: "Computer", type: "computer", location: "Lab B1", room: "B101", building: "B", roomType: "lab", status: "on", power: 200, voltage: 110, lastMaintenance: "2023-10-25", energySaved: 26 },
+            { id: 15, name: "AC", type: "ac", location: "Office C1", room: "C101", building: "C", roomType: "office", status: "on", power: 1600, voltage: 220, lastMaintenance: "2023-09-30", energySaved: 135 },
+            { id: 16, name: "Light", type: "light", location: "Hallway A2", room: "A104", building: "A", roomType: "hallway", status: "off", power: 100, voltage: 110, lastMaintenance: "2023-11-12", energySaved: 11 },
+            { id: 17, name: "Projector", type: "projector", location: "Classroom B1", room: "B102", building: "B", roomType: "classroom", status: "on", power: 280, voltage: 110, lastMaintenance: "2023-10-05", energySaved: 22 },
+            { id: 18, name: "Computer", type: "computer", location: "Office D1", room: "D101", building: "D", roomType: "office", status: "warning", power: 190, voltage: 110, lastMaintenance: "2023-08-20", energySaved: 19 },
+            { id: 19, name: "Light", type: "light", location: "Library", room: "A101", building: "A", roomType: "library", status: "on", power: 120, voltage: 110, lastMaintenance: "2023-10-18", energySaved: 16 },
+            { id: 20, name: "AC", type: "ac", location: "Classroom C1", room: "C102", building: "C", roomType: "classroom", status: "on", power: 1700, voltage: 220, lastMaintenance: "2023-09-22", energySaved: 142 },
+            { id: 21, name: "Printer", type: "printer", location: "Office E1", room: "E101", building: "E", roomType: "office", status: "on", power: 50, voltage: 110, lastMaintenance: "2023-10-10", energySaved: 5 },
+            { id: 22, name: "Light", type: "light", location: "Hallway E2", room: "E201", building: "E", roomType: "hallway", status: "off", power: 90, voltage: 110, lastMaintenance: "2023-11-15", energySaved: 10 },
+            { id: 23, name: "Fan", type: "fan", location: "Lab A3", room: "A301", building: "A", roomType: "lab", status: "on", power: 70, voltage: 110, lastMaintenance: "2023-10-28", energySaved: 7 },
+            { id: 24, name: "Computer", type: "computer", location: "Library", room: "A101", building: "A", roomType: "library", status: "on", power: 210, voltage: 110, lastMaintenance: "2023-11-05", energySaved: 24 },
+            { id: 25, name: "AC", type: "ac", location: "Auditorium", room: "A201", building: "A", roomType: "auditorium", status: "on", power: 2200, voltage: 220, lastMaintenance: "2023-09-18", energySaved: 175 },
+            { id: 26, name: "Projector", type: "projector", location: "Classroom D1", room: "D102", building: "D", roomType: "classroom", status: "off", power: 270, voltage: 110, lastMaintenance: "2023-10-22", energySaved: 21 },
+            { id: 27, name: "Light", type: "light", location: "Office B2", room: "B202", building: "B", roomType: "office", status: "on", power: 115, voltage: 110, lastMaintenance: "2023-11-08", energySaved: 13 },
+            { id: 28, name: "Printer", type: "printer", location: "Lab C2", room: "C201", building: "C", roomType: "lab", status: "warning", power: 60, voltage: 110, lastMaintenance: "2023-08-25", energySaved: 6 },
+            { id: 29, name: "Fan", type: "fan", location: "Classroom E1", room: "E102", building: "E", roomType: "classroom", status: "on", power: 85, voltage: 110, lastMaintenance: "2023-10-30", energySaved: 8 },
+            { id: 30, name: "Computer", type: "computer", location: "Office A3", room: "A302", building: "A", roomType: "office", status: "off", power: 195, voltage: 110, lastMaintenance: "2023-11-12", energySaved: 20 }
+        ];
+
+        // Enhanced schedule data with more schedules
+        const scheduleData = [
+            { id: 1, name: "Morning Classes", target: "Building A Lights", time: "07:30 - 08:00", action: "Turn On", status: "active" },
+            { id: 2, name: "Lunch Break", target: "Classroom AC Units", time: "12:00 - 13:00", action: "Power Save", status: "active" },
+            { id: 3, name: "Evening Shutdown", target: "All Devices", time: "18:00", action: "Turn Off", status: "active" },
+            { id: 4, name: "Weekend Schedule", target: "Library Devices", time: "09:00 - 17:00", action: "Turn On", status: "inactive" },
+            { id: 5, name: "Lab Safety", target: "Lab Equipment", time: "When Unoccupied", action: "Turn Off", status: "active" },
+            { id: 6, name: "Night Lights", target: "Hallway Lights", time: "20:00 - 06:00", action: "Dim 50%", status: "active" },
+            { id: 7, name: "Library AC", target: "Library AC", time: "09:00 - 21:00", action: "Set 22°C", status: "active" },
+            { id: 8, name: "Weekend Power Save", target: "All Non-Essential", time: "Sat-Sun", action: "Power Save", status: "inactive" },
+            { id: 9, name: "Classroom Prep", target: "Classroom Devices", time: "07:00", action: "Turn On", status: "active" },
+            { id: 10, name: "Evening Cleanup", target: "All Labs", time: "17:30", action: "Turn Off", status: "active" },
+            { id: 11, name: "Office Hours", target: "Office Devices", time: "08:00 - 17:00", action: "Turn On", status: "active" },
+            { id: 12, name: "Building E Night", target: "Building E Lights", time: "18:00 - 22:00", action: "Turn On", status: "inactive" },
+            { id: 13, name: "Summer Schedule", target: "All AC Units", time: "10:00 - 16:00", action: "Power Save", status: "active" },
+            { id: 14, name: "Library Extended", target: "Library Computers", time: "18:00 - 22:00", action: "Turn On", status: "active" },
+            { id: 15, name: "Holiday Mode", target: "All Non-Essential", time: "Holidays", action: "Turn Off", status: "inactive" }
+        ];
+
+        // Current filters
+        let currentFilters = {
+            building: 'all',
+            roomType: 'all',
+            deviceType: 'all',
+            voltage: 'all',
+            search: ''
+        };
+
+        // Generate device cards
+        function generateDevices() {
+            const devicesGrid = document.getElementById('devicesGrid');
+            devicesGrid.innerHTML = '';
+            
+            let activeCount = 0;
+            let offCount = 0;
+            let warningCount = 0;
+            let totalEnergySaved = 0;
+            
+            // Filter devices based on current filters
+            const filteredDevices = deviceData.filter(device => {
+                // Building filter
+                if (currentFilters.building !== 'all' && device.building !== currentFilters.building) {
+                    return false;
+                }
+                
+                // Room type filter
+                if (currentFilters.roomType !== 'all' && device.roomType !== currentFilters.roomType) {
+                    return false;
+                }
+                
+                // Device type filter
+                if (currentFilters.deviceType !== 'all' && device.type !== currentFilters.deviceType) {
+                    return false;
+                }
+                
+                // Voltage filter
+                if (currentFilters.voltage !== 'all') {
+                    if (currentFilters.voltage === 'low' && device.voltage > 120) {
+                        return false;
+                    }
+                    if (currentFilters.voltage === 'medium' && (device.voltage <= 120 || device.voltage > 240)) {
+                        return false;
+                    }
+                    if (currentFilters.voltage === 'high' && device.voltage <= 240) {
+                        return false;
+                    }
+                }
+                
+                // Search filter
+                if (currentFilters.search && 
+                    !device.name.toLowerCase().includes(currentFilters.search.toLowerCase()) && 
+                    !device.id.toString().includes(currentFilters.search) &&
+                    !device.location.toLowerCase().includes(currentFilters.search.toLowerCase()) &&
+                    !device.room.toLowerCase().includes(currentFilters.search.toLowerCase())) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            filteredDevices.forEach(device => {
+                // Update counters
+                if (device.status === 'on') activeCount++;
+                else if (device.status === 'off') offCount++;
+                else if (device.status === 'warning') warningCount++;
+                
+                totalEnergySaved += device.energySaved;
+                
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.innerHTML = `
+                    <div class="device-header">
+                        <div class="device-name">${device.name} #${device.id}</div>
+                        <div class="device-status status-${device.status}"></div>
+                    </div>
+                    <div class="device-details">
+                        <div class="device-detail">
+                            <div class="detail-label">Location</div>
+                            <div class="detail-value">${device.location}</div>
+                        </div>
+                        <div class="device-detail">
+                            <div class="detail-label">Room</div>
+                            <div class="detail-value">${device.room}</div>
+                        </div>
+                        <div class="device-detail">
+                            <div class="detail-label">Bldg</div>
+                            <div class="detail-value">${device.building}</div>
+                        </div>
+                        <div class="device-detail">
+                            <div class="detail-label">Voltage</div>
+                            <div class="detail-value">${device.voltage}V</div>
+                        </div>
+                        <div class="device-detail">
+                            <div class="detail-label">Power</div>
+                            <div class="detail-value">${device.power}W</div>
+                        </div>
+                        <div class="device-detail">
+                            <div class="detail-label">Saved</div>
+                            <div class="detail-value">${device.energySaved}kWh</div>
+                        </div>
+                    </div>
+                    <div class="device-actions">
+                        <button class="device-btn device-btn-on" data-id="${device.id}" data-action="turn-on">On</button>
+                        <button class="device-btn device-btn-off" data-id="${device.id}" data-action="turn-off">Off</button>
+                    </div>
+                `;
+                
+                devicesGrid.appendChild(deviceCard);
+            });
+            
+            // Update device summary
+            document.getElementById('deviceSummary').textContent = 
+                `${filteredDevices.length} Devices | ${offCount} Off | ${warningCount} Issues`;
+                
+            // Update stats
+            document.getElementById('onlineCount').textContent = activeCount;
+            document.getElementById('offlineCount').textContent = offCount;
+            document.getElementById('warningCount').textContent = warningCount;
+            document.getElementById('energySaved').textContent = totalEnergySaved + ' kWh';
+        }
+
+        // Generate schedule table
+        function generateScheduleTable() {
+            const tableBody = document.getElementById('scheduleTableBody');
+            tableBody.innerHTML = '';
+            
+            scheduleData.forEach(schedule => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${schedule.name}</td>
+                    <td>${schedule.target}</td>
+                    <td>${schedule.time}</td>
+                    <td>${schedule.action}</td>
+                    <td><span class="schedule-status status-${schedule.status}">${schedule.status === 'active' ? 'Active' : 'Inactive'}</span></td>
+                    <td class="schedule-actions">
+                        <button class="action-btn edit" data-id="${schedule.id}">Edit</button>
+                        <button class="action-btn delete" data-id="${schedule.id}">Delete</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Enable all schedules
+        function enableAllSchedules() {
+            scheduleData.forEach(schedule => {
+                schedule.status = 'active';
+            });
+            generateScheduleTable();
+            showNotification('All Schedules Enabled', 'All automation schedules have been activated', 'info');
+        }
+
+        // Disable all schedules
+        function disableAllSchedules() {
+            scheduleData.forEach(schedule => {
+                schedule.status = 'inactive';
+            });
+            generateScheduleTable();
+            showNotification('All Schedules Disabled', 'All automation schedules have been deactivated', 'info');
+        }
+
+        // Emergency shutdown
+        function emergencyShutdown() {
+            if (confirm('Are you sure you want to initiate emergency shutdown? This will turn off all non-critical devices.')) {
+                deviceData.forEach(device => {
+                    if (device.type !== 'light') { // Keep lights on for safety
+                        device.status = 'off';
+                    }
+                });
+                generateDevices();
+                showNotification('Emergency Shutdown Initiated', 'All non-critical devices are being turned off', 'warning');
+            }
+        }
+
+        // Safe mode
+        function activateSafeMode() {
+            deviceData.forEach(device => {
+                if (device.type === 'ac') {
+                    // Reduce AC power consumption
+                    device.power = Math.round(device.power * 0.7);
+                    device.energySaved += 5; // Add some energy savings
+                } else if (device.type === 'light') {
+                    // Dim lights
+                    device.power = Math.round(device.power * 0.8);
+                    device.energySaved += 2;
+                }
+            });
+            generateDevices();
+            showNotification('Safe Mode Activated', 'All devices are operating in power-saving mode', 'info');
+        }
+
+        // Show notification
+        function showNotification(title, message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationTitle = document.getElementById('notificationTitle');
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            notificationTitle.textContent = title;
+            notificationMessage.textContent = message;
+            
+            // Remove existing classes
+            notification.classList.remove('error', 'warning');
+            
+            // Add appropriate class based on type
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else if (type === 'warning') {
+                notification.classList.add('warning');
+            }
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            generateDevices();
+            generateScheduleTable();
+            
+            // Filter button event listeners
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const filterType = this.dataset.filter;
+                    const filterValue = this.dataset.value;
+                    
+                    // If it's a day button (for schedule), handle differently
+                    if (this.dataset.day) {
+                        this.classList.toggle('active');
+                        return;
+                    }
+                    
+                    if (filterType) {
+                        // Update active state of filter buttons
+                        this.parentElement.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        // Update current filters
+                        currentFilters[filterType] = filterValue;
+                        
+                        // Regenerate devices
+                        generateDevices();
+                    }
+                });
+            });
+            
+            // Search input event listener
+            document.getElementById('deviceSearch').addEventListener('input', function() {
+                currentFilters.search = this.value;
+                generateDevices();
+            });
+            
+            // Device control buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('device-btn')) {
+                    const deviceId = e.target.dataset.id;
+                    const action = e.target.dataset.action;
+                    const device = deviceData.find(d => d.id == deviceId);
+                    
+                    if (device) {
+                        if (action === 'turn-on') {
+                            device.status = 'on';
+                            showNotification(
+                                'Device Turned On', 
+                                `${device.name} #${device.id} in ${device.location} has been turned on`, 
+                                'info'
+                            );
+                        } else if (action === 'turn-off') {
+                            device.status = 'off';
+                            showNotification(
+                                'Device Turned Off', 
+                                `${device.name} #${device.id} in ${device.location} has been turned off`, 
+                                'info'
+                            );
+                        }
+                        
+                        // Regenerate devices to reflect changes
+                        generateDevices();
+                    }
+                }
+                
+                // Schedule action buttons
+                if (e.target.classList.contains('edit')) {
+                    const scheduleId = e.target.dataset.id;
+                    showNotification(
+                        'Edit Schedule', 
+                        `Editing schedule #${scheduleId}`, 
+                        'info'
+                    );
+                    // In a real app, we would open the modal with the schedule data
+                }
+                
+                if (e.target.classList.contains('delete')) {
+                    const scheduleId = e.target.dataset.id;
+                    const scheduleIndex = scheduleData.findIndex(s => s.id == scheduleId);
+                    if (scheduleIndex !== -1) {
+                        scheduleData.splice(scheduleIndex, 1);
+                        generateScheduleTable();
+                        showNotification(
+                            'Schedule Deleted', 
+                            `Schedule #${scheduleId} has been deleted`, 
+                            'info'
+                        );
+                    }
+                }
+            });
+            
+            // Emergency controls
+            document.getElementById('emergencyShutdown').addEventListener('click', emergencyShutdown);
+            
+            document.getElementById('safeMode').addEventListener('click', activateSafeMode);
+            
+            // Schedule modal controls
+            const modal = document.getElementById('scheduleModal');
+            const createBtn = document.getElementById('createScheduleBtn');
+            const closeBtn = document.getElementById('modalClose');
+            const cancelBtn = document.getElementById('cancelSchedule');
+            const saveBtn = document.getElementById('saveSchedule');
+            
+            createBtn.addEventListener('click', function() {
+                modal.classList.add('active');
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+            
+            cancelBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+            
+            saveBtn.addEventListener('click', function() {
+                const name = document.getElementById('scheduleName').value;
+                if (!name) {
+                    alert('Please enter a schedule name');
+                    return;
+                }
+                
+                // Create new schedule
+                const newSchedule = {
+                    id: scheduleData.length + 1,
+                    name: name,
+                    target: document.getElementById('targetDevices').value,
+                    time: document.getElementById('startTime').value + ' - ' + document.getElementById('endTime').value,
+                    action: document.getElementById('scheduleAction').value,
+                    status: 'active'
+                };
+                
+                scheduleData.push(newSchedule);
+                generateScheduleTable();
+                
+                showNotification(
+                    'Schedule Created', 
+                    `"${name}" schedule has been created successfully`, 
+                    'info'
+                );
+                
+                modal.classList.remove('active');
+            });
+            
+            // Bulk schedule controls
+            document.getElementById('bulkEnable').addEventListener('click', enableAllSchedules);
+            
+            document.getElementById('bulkDisable').addEventListener('click', disableAllSchedules);
+            
+            document.getElementById('exportSchedules').addEventListener('click', function() {
+                showNotification(
+                    'Schedules Exported', 
+                    'All automation schedules have been exported successfully', 
+                    'info'
+                );
+            });
+            
+            // AI Toggle functionality
+            document.getElementById('aiToggle').addEventListener('change', function() {
+                if (this.checked) {
+                    showNotification('AI Auto-Schedule Enabled', 'AI will now optimize schedules automatically', 'info');
+                } else {
+                    showNotification('AI Auto-Schedule Disabled', 'AI optimization has been turned off', 'warning');
+                }
+            });
+            
+            // Show welcome notification after page loads
+            setTimeout(() => {
+                showNotification(
+                    'Smart Control System Loaded', 
+                    'All systems are operational. You can now manage device automation.', 
+                    'info'
+                );
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

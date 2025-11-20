@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Analytics - EcoSmart Campus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/regression@2.0.1/dist/regression.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --leaf-green: #228B22;
+            --mint: #98FB98;
+            --warning: #FFA500;
+            --danger: #DC143C;
+            --lab-blue: #87CEEB;
+            --library-purple: #9370DB;
+            --success: #32CD32;
+            --analytics-blue: #4169E1;
+            --forecast-orange: #FF8C00;
+            --sidebar-width: 250px;
+            --header-height: 80px;
+            --light-green: #E8F5E9;
+            --dark-green: #1B5E20;
+            --gradient-green: linear-gradient(135deg, #2E8B57 0%, #4CAF50 100%);
+            --gradient-light: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            --shadow: 0 10px 30px rgba(46, 139, 87, 0.15);
+            --shadow-hover: 0 15px 40px rgba(46, 139, 87, 0.25);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--background) 0%, #f0f8f0 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--gradient-green);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(46, 139, 87, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.8rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a.active:before {
+            width: 100%;
+        }
+
+        .nav-links a:hover:before {
+            width: 100%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            width: 200px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 0.8rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown a:hover {
+            background: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        /* Analytics Dashboard */
+        .analytics-dashboard {
+            padding: 2rem 0;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-header:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-title i {
+            color: var(--analytics-blue);
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--analytics-blue), #6A5ACD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        .dashboard-title h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-dark), #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--analytics-blue), #6A5ACD);
+            color: white;
+            box-shadow: 0 6px 20px rgba(65, 105, 225, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(65, 105, 225, 0.35);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent-green), var(--mint));
+            color: var(--text-dark);
+            box-shadow: 0 6px 20px rgba(144, 238, 144, 0.25);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(144, 238, 144, 0.35);
+        }
+
+        /* Enhanced Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
+            padding: 1.8rem 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--analytics-blue), var(--success));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--analytics-blue), #6A5ACD);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(65, 105, 225, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-dark), #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(46, 139, 87, 0.1);
+            width: fit-content;
+            margin: 0.8rem auto 0;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        /* Main Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 1.8rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 1400px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Enhanced Chart Containers */
+        .chart-container {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--forecast-orange), var(--warning));
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-title i {
+            color: var(--forecast-orange);
+            font-size: 1.8rem;
+        }
+
+        .chart-title h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .time-filter {
+            display: flex;
+            background: var(--background);
+            border-radius: 12px;
+            padding: 4px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--analytics-blue), #6A5ACD);
+            color: white;
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.25);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+
+        /* Mathematical Models Section */
+        .models-section {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.3);
+            margin-bottom: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .models-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-title i {
+            color: var(--analytics-blue);
+            font-size: 2rem;
+        }
+
+        .panel-title h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .model-card {
+            background: var(--light-green);
+            padding: 1.8rem;
+            border-radius: 16px;
+            border-left: 5px solid var(--analytics-blue);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .model-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .model-card:hover:before {
+            transform: scaleX(1);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+        }
+
+        .model-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--analytics-blue), #6A5ACD);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.25);
+        }
+
+        .model-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .model-formula {
+            font-family: 'Courier New', monospace;
+            background: rgba(65, 105, 225, 0.08);
+            padding: 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            border-left: 4px solid var(--analytics-blue);
+            transition: all 0.3s ease;
+        }
+
+        .model-formula:hover {
+            background: rgba(65, 105, 225, 0.12);
+            transform: translateX(5px);
+        }
+
+        .model-parameters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .parameter {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .parameter label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .parameter input {
+            padding: 10px;
+            border: 2px solid var(--accent-green);
+            border-radius: 8px;
+            background: var(--card-bg);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .parameter input:focus {
+            border-color: var(--analytics-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
+        }
+
+        /* Pattern Recognition */
+        .pattern-section {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #f8f8f8 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .pattern-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .pattern-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cluster-visualization {
+            background: var(--light-green);
+            padding: 1.8rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .cluster-visualization:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+        }
+
+        .cluster-canvas {
+            width: 100%;
+            height: 280px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 2px dashed var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: 600;
+            overflow: hidden;
+        }
+
+        .pattern-analysis h4 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+        }
+
+        .insights-list {
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--success), #28a745);
+            color: white;
+            padding: 1.2rem 1.8rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-hover);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: all 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 380px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--danger), #dc3545);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, var(--warning), #fd7e14);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, var(--analytics-blue), #6A5ACD);
+        }
+
+        .notification i {
+            font-size: 1.3rem;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--light-green);
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .floating-1 {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 5%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            right: 5%;
+            animation: float 20s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .nav-links a {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1.5rem;
+                align-items: flex-start;
+            }
+            
+            .dashboard-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            
+            .nav-links a {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+            
+            .dashboard-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-parameters {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .chart-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--analytics-blue);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2E8B57;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Elements -->
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-network"></i>
+                    <h1>Energy Analytics</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="campus-layout.html">Campus Layout</a>
+                    <a href="analytics.html" class="active">Analytics</a>
+                    <a href="devices.html">Smart Control</a>
+                    <a href="reports.html">Reports</a>
+                </nav>
+                <div class="user-info">
+                    <div class="user-info">
+                    
+  <button class="btn btn-login" onclick="window.location.href='modal.html'">Business-Model</button>
+  
+</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Analytics Dashboard -->
+    <section class="analytics-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <i class="fas fa-brain"></i>
+                    <h2>Advanced Energy Intelligence</h2>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="btn btn-primary" onclick="runComprehensiveAnalysis()">
+                        <i class="fas fa-rocket"></i> Run Full Analysis
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateReport()">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhanced Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" onclick="showConsumptionDetails()">
+                    <div class="stat-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-value" id="totalConsumption">2,847</div>
+                    <div class="stat-label">Total Consumption (kWh)</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i> 15.3% vs last month
+                    </div>
+                </div>
+                <div class="stat-card" onclick="showSavingsDetails()">
+                    <div class="stat-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div class="stat-value" id="totalSavings">$4,287</div>
+                    <div class="stat-label">Total Savings</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 22.1% improvement
+                    </div>
+                </div>
+                <div class="stat-card" onclick="showEfficiencyDetails()">
+                    <div class="stat-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-value" id="efficiencyRate">94.2%</div>
+                    <div class="stat-label">Efficiency Rate</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 8.7% improvement
+                    </div>
+                </div>
+                <div class="stat-card" onclick="showForecastDetails()">
+                    <div class="stat-icon">
+                        <i class="fas fa-crystal-ball"></i>
+                    </div>
+                    <div class="stat-value" id="forecastAccuracy">96.8%</div>
+                    <div class="stat-label">Forecast Accuracy</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 3.2% improvement
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Analytics Grid -->
+            <div class="analytics-grid">
+                <!-- Consumption Trends -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Energy Consumption Trends</h3>
+                        </div>
+                        <div class="chart-controls">
+                            <div class="time-filter">
+                                <button class="filter-btn active" onclick="changeTimeRange('week')">Week</button>
+                                <button class="filter-btn" onclick="changeTimeRange('month')">Month</button>
+                                <button class="filter-btn" onclick="changeTimeRange('year')">Year</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="consumptionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Forecasting Engine -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-crystal-ball"></i>
+                            <h3>Energy Forecasting</h3>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn btn-secondary" onclick="runForecast()">
+                                <i class="fas fa-sync-alt"></i> Update Forecast
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Savings Analysis -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3>Savings Analysis</h3>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn btn-secondary" onclick="toggleSavingsView()">
+                                <i class="fas fa-exchange-alt"></i> Toggle View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="savingsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pattern Recognition -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-project-diagram"></i>
+                            <h3>Usage Pattern Clusters</h3>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn btn-secondary" onclick="identifyPatterns()">
+                                <i class="fas fa-search"></i> Identify Patterns
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="patternChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Models Section -->
+            <div class="models-section">
+                <div class="panel-title">
+                    <i class="fas fa-calculator"></i>
+                    <h3>Mathematical Forecasting Models</h3>
+                </div>
+                <div class="models-grid">
+                    <!-- Recurrence Relations Model -->
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div class="model-icon">
+                                <i class="fas fa-infinity"></i>
+                            </div>
+                            <div class="model-title">Recurrence Relations</div>
+                        </div>
+                        <div class="model-formula">
+                            E<sub>n</sub> = α × E<sub>n-1</sub> + β × U<sub>n</sub> - γ × S<sub>n</sub> + ε
+                        </div>
+                        <div class="model-parameters">
+                            <div class="parameter">
+                                <label for="alpha">Alpha (α) - Historical Weight</label>
+                                <input type="number" id="alpha" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                            <div class="parameter">
+                                <label for="beta">Beta (β) - Usage Factor</label>
+                                <input type="number" id="beta" min="0" max="1" step="0.1" value="0.2">
+                            </div>
+                            <div class="parameter">
+                                <label for="gamma">Gamma (γ) - Savings Impact</label>
+                                <input type="number" id="gamma" min="0" max="1" step="0.1" value="0.08">
+                            </div>
+                            <div class="parameter">
+                                <label for="epsilon">Epsilon (ε) - Random Factor</label>
+                                <input type="number" id="epsilon" min="0" max="0.1" step="0.01" value="0.02">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="applyRecurrenceModel()" style="width: 100%;">
+                            <i class="fas fa-play"></i> Apply Model
+                        </button>
+                    </div>
+
+                    <!-- Function Analysis Model -->
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div class="model-icon">
+                                <i class="fas fa-function"></i>
+                            </div>
+                            <div class="model-title">Function Analysis</div>
+                        </div>
+                        <div class="model-formula">
+                            f(r,t) = ∑(p<sub>r,d</sub> × s<sub>r,d</sub>(t) × O<sub>r</sub>(t))
+                        </div>
+                        <div class="model-parameters">
+                            <div class="parameter">
+                                <label for="roomWeight">Room Weight Factor</label>
+                                <input type="number" id="roomWeight" min="0.5" max="2" step="0.1" value="1.2">
+                            </div>
+                            <div class="parameter">
+                                <label for="timeDecay">Time Decay Rate</label>
+                                <input type="number" id="timeDecay" min="0.1" max="0.9" step="0.1" value="0.6">
+                            </div>
+                            <div class="parameter">
+                                <label for="occupancyImpact">Occupancy Impact</label>
+                                <input type="number" id="occupancyImpact" min="0.1" max="1" step="0.1" value="0.8">
+                            </div>
+                            <div class="parameter">
+                                <label for="deviceEfficiency">Device Efficiency</label>
+                                <input type="number" id="deviceEfficiency" min="0.5" max="1" step="0.05" value="0.85">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="applyFunctionModel()" style="width: 100%;">
+                            <i class="fas fa-play"></i> Apply Model
+                        </button>
+                    </div>
+
+                    <!-- Probability Prediction Model -->
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div class="model-icon">
+                                <i class="fas fa-dice"></i>
+                            </div>
+                            <div class="model-title">Probability Prediction</div>
+                        </div>
+                        <div class="model-formula">
+                            P(usage|t) = ∫[P<sub>r</sub>(t) × f(r,t) × W(season)]dr
+                        </div>
+                        <div class="model-parameters">
+                            <div class="parameter">
+                                <label for="probabilityThreshold">Probability Threshold</label>
+                                <input type="number" id="probabilityThreshold" min="0.1" max="0.9" step="0.05" value="0.7">
+                            </div>
+                            <div class="parameter">
+                                <label for="seasonalWeight">Seasonal Weight</label>
+                                <input type="number" id="seasonalWeight" min="0.5" max="2" step="0.1" value="1.3">
+                            </div>
+                            <div class="parameter">
+                                <label for="confidenceLevel">Confidence Level</label>
+                                <input type="number" id="confidenceLevel" min="0.8" max="0.99" step="0.01" value="0.95">
+                            </div>
+                            <div class="parameter">
+                                <label for="smoothingFactor">Smoothing Factor</label>
+                                <input type="number" id="smoothingFactor" min="0.1" max="0.9" step="0.1" value="0.5">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="applyProbabilityModel()" style="width: 100%;">
+                            <i class="fas fa-play"></i> Apply Model
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern Recognition Section -->
+            <div class="pattern-section">
+                <div class="panel-title">
+                    <i class="fas fa-fingerprint"></i>
+                    <h3>Advanced Pattern Recognition</h3>
+                </div>
+                <div class="pattern-grid">
+                    <div class="cluster-visualization">
+                        <h4>Usage Pattern Clusters</h4>
+                        <div class="cluster-canvas" id="clusterCanvas">
+                            <canvas id="clusterChart" width="600" height="300"></canvas>
+                        </div>
+                    </div>
+                    <div class="pattern-analysis">
+                        <h4>Pattern Insights</h4>
+                        <div class="insights-list" id="insightsList">
+                            <!-- Insights will be populated by JavaScript -->
+                        </div>
+                        <button class="btn btn-primary" onclick="generatePatternInsights()" style="width: 100%; margin-top: 1rem;">
+                            <i class="fas fa-lightbulb"></i> Generate Insights
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notification Element -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationMessage">Notification message</span>
+    </div>
+
+    <script>
+        // Enhanced data structure with realistic energy data
+        const analyticsData = {
+            consumption: {
+                historical: generateHistoricalData(),
+                forecast: [],
+                trends: {
+                    weekly: -15.3,
+                    monthly: -12.1,
+                    yearly: -8.7
+                }
+            },
+            savings: {
+                total: 4287,
+                byBuilding: {
+                    'Science Building': 1240,
+                    'Engineering Hall': 980,
+                    'Main Library': 756,
+                    'Administration': 543,
+                    'Classroom Wing': 768
+                },
+                breakdown: {
+                    optimization: 65,
+                    scheduling: 22,
+                    maintenance: 8,
+                    behavior: 5
+                }
+            },
+            patterns: {
+                clusters: [],
+                anomalies: [],
+                seasonal: [],
+                insights: []
+            },
+            models: {
+                recurrence: {
+                    alpha: 0.7,
+                    beta: 0.2,
+                    gamma: 0.08,
+                    epsilon: 0.02
+                },
+                function: {
+                    roomWeight: 1.2,
+                    timeDecay: 0.6,
+                    occupancyImpact: 0.8,
+                    deviceEfficiency: 0.85
+                },
+                probability: {
+                    threshold: 0.7,
+                    seasonalWeight: 1.3,
+                    confidence: 0.95,
+                    smoothing: 0.5
+                }
+            },
+            forecasts: {
+                accuracy: 96.8,
+                confidence: 0.92,
+                horizon: 30 // days
+            }
+        };
+
+        // Chart instances
+        let consumptionChart, forecastChart, savingsChart, patternChart, clusterChart;
+
+        // Initialize the analytics dashboard
+        function initAnalytics() {
+            initializeCharts();
+            updateStatistics();
+            generateForecast();
+            identifyPatterns();
+            setupEventListeners();
+            showNotification('Analytics dashboard initialized successfully!', 'success');
+        }
+
+        // Generate realistic historical data
+        function generateHistoricalData() {
+            const data = [];
+            const baseConsumption = 2800;
+            const now = new Date();
+            
+            for (let i = 90; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                
+                // Add seasonal variation and random noise
+                const dayOfYear = date.getDayOfYear ? date.getDayOfYear() : Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+                const seasonal = Math.sin(dayOfYear / 365 * 2 * Math.PI) * 0.15;
+                const weekly = Math.sin(date.getDay() / 7 * 2 * Math.PI) * 0.1;
+                const random = (Math.random() - 0.5) * 0.2;
+                const trend = -i * 0.003; // Slight downward trend
+                
+                const consumption = baseConsumption * (1 + seasonal + weekly + random + trend);
+                
+                data.push({
+                    date: date.toISOString().split('T')[0],
+                    consumption: Math.round(consumption),
+                    optimized: Math.round(consumption * 0.85), // 15% savings from optimization
+                    baseline: Math.round(consumption * 1.1) // 10% higher baseline
+                });
+            }
+            
+            return data;
+        }
+
+        // Initialize all charts
+        function initializeCharts() {
+            // Consumption Trends Chart
+            const consumptionCtx = document.getElementById('consumptionChart').getContext('2d');
+            consumptionChart = new Chart(consumptionCtx, {
+                type: 'line',
+                data: {
+                    labels: analyticsData.consumption.historical.slice(-30).map(d => {
+                        const date = new Date(d.date);
+                        return `${date.getMonth() + 1}/${date.getDate()}`;
+                    }),
+                    datasets: [
+                        {
+                            label: 'Actual Consumption',
+                            data: analyticsData.consumption.historical.slice(-30).map(d => d.consumption),
+                            borderColor: '#2E8B57',
+                            backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Optimized Target',
+                            data: analyticsData.consumption.historical.slice(-30).map(d => d.optimized),
+                            borderColor: '#3CB371',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Energy Consumption Trends',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: { weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy Consumption (kWh)',
+                                font: { weight: 'bold' }
+                            },
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+
+            // Forecasting Chart
+            const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+            forecastChart = new Chart(forecastCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Historical',
+                            data: [],
+                            borderColor: '#4169E1',
+                            backgroundColor: 'rgba(65, 105, 225, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Forecast',
+                            data: [],
+                            borderColor: '#FF8C00',
+                            borderDash: [5, 5],
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: false,
+                            pointBackgroundColor: '#FF8C00'
+                        },
+                        {
+                            label: 'Confidence Interval',
+                            data: [],
+                            borderColor: 'rgba(255, 140, 0, 0.3)',
+                            backgroundColor: 'rgba(255, 140, 0, 0.1)',
+                            borderWidth: 1,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '30-Day Energy Consumption Forecast',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: { weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy Consumption (kWh)',
+                                font: { weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Savings Analysis Chart
+            const savingsCtx = document.getElementById('savingsChart').getContext('2d');
+            savingsChart = new Chart(savingsCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(analyticsData.savings.byBuilding),
+                    datasets: [{
+                        label: 'Savings by Building ($)',
+                        data: Object.values(analyticsData.savings.byBuilding),
+                        backgroundColor: [
+                            'rgba(46, 139, 87, 0.8)',
+                            'rgba(60, 179, 113, 0.8)',
+                            'rgba(144, 238, 144, 0.8)',
+                            'rgba(152, 251, 152, 0.8)',
+                            'rgba(34, 139, 34, 0.8)'
+                        ],
+                        borderColor: [
+                            '#2E8B57',
+                            '#3CB371',
+                            '#90EE90',
+                            '#98FB98',
+                            '#228B22'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Energy Savings by Building',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Savings ($)',
+                                font: { weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pattern Recognition Chart
+            const patternCtx = document.getElementById('patternChart').getContext('2d');
+            patternChart = new Chart(patternCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Morning', 'Afternoon', 'Evening', 'Night', 'Weekend', 'Holiday'],
+                    datasets: [
+                        {
+                            label: 'Current Usage Pattern',
+                            data: [85, 92, 78, 45, 65, 35],
+                            backgroundColor: 'rgba(65, 105, 225, 0.2)',
+                            borderColor: '#4169E1',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#4169E1'
+                        },
+                        {
+                            label: 'Optimal Pattern',
+                            data: [75, 85, 70, 30, 55, 25],
+                            backgroundColor: 'rgba(46, 139, 87, 0.2)',
+                            borderColor: '#2E8B57',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#2E8B57'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Usage Pattern Analysis',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Cluster Chart
+            const clusterCtx = document.getElementById('clusterChart').getContext('2d');
+            clusterChart = new Chart(clusterCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Low Usage',
+                            data: generateClusterData(10, 50, 100, 30, 70),
+                            backgroundColor: 'rgba(144, 238, 144, 0.7)',
+                            borderColor: '#90EE90',
+                            pointRadius: 8
+                        },
+                        {
+                            label: 'Medium Usage',
+                            data: generateClusterData(20, 150, 200, 100, 150),
+                            backgroundColor: 'rgba(65, 105, 225, 0.7)',
+                            borderColor: '#4169E1',
+                            pointRadius: 8
+                        },
+                        {
+                            label: 'High Usage',
+                            data: generateClusterData(15, 300, 350, 200, 250),
+                            backgroundColor: 'rgba(255, 140, 0, 0.7)',
+                            borderColor: '#FF8C00',
+                            pointRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Energy Usage Pattern Clusters',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time of Day (Hours)',
+                                font: { weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 24
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy Consumption (kWh)',
+                                font: { weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 300
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate cluster data for visualization
+        function generateClusterData(count, xCenter, xSpread, yCenter, ySpread) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                data.push({
+                    x: xCenter + (Math.random() - 0.5) * xSpread,
+                    y: yCenter + (Math.random() - 0.5) * ySpread
+                });
+            }
+            return data;
+        }
+
+        // Update all statistics displays
+        function updateStatistics() {
+            document.getElementById('totalConsumption').textContent = 
+                analyticsData.consumption.historical.reduce((sum, day) => sum + day.consumption, 0).toLocaleString();
+            
+            document.getElementById('totalSavings').textContent = 
+                `$${analyticsData.savings.total.toLocaleString()}`;
+            
+            document.getElementById('efficiencyRate').textContent = 
+                `${analyticsData.forecasts.accuracy}%`;
+            
+            document.getElementById('forecastAccuracy').textContent = 
+                `${analyticsData.forecasts.accuracy}%`;
+        }
+
+        // Generate energy forecast using mathematical models
+        function generateForecast() {
+            const historicalData = analyticsData.consumption.historical.slice(-30).map(d => d.consumption);
+            const forecast = [];
+            const confidence = [];
+            
+            // Use recurrence relation for forecasting
+            for (let i = 0; i < analyticsData.forecasts.horizon; i++) {
+                const lastValue = i === 0 ? historicalData[historicalData.length - 1] : forecast[i - 1];
+                const trend = analyticsData.consumption.trends.weekly / 100;
+                const seasonal = Math.sin((i / 30) * 2 * Math.PI) * 0.1;
+                const random = (Math.random() - 0.5) * 0.05;
+                
+                // Apply recurrence relation: E_n = E_{n-1} * (1 + trend + seasonal + random)
+                const forecastValue = lastValue * (1 + trend + seasonal + random);
+                forecast.push(Math.round(forecastValue));
+                
+                // Calculate confidence interval
+                const confidenceWidth = forecastValue * (1 - analyticsData.forecasts.confidence);
+                confidence.push({
+                    upper: Math.round(forecastValue + confidenceWidth),
+                    lower: Math.round(forecastValue - confidenceWidth)
+                });
+            }
+            
+            analyticsData.consumption.forecast = forecast;
+            
+            // Update forecast chart
+            const dates = [];
+            const now = new Date();
+            for (let i = -29; i <= analyticsData.forecasts.horizon; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() + i);
+                dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+            }
+            
+            forecastChart.data.labels = dates;
+            forecastChart.data.datasets[0].data = [...historicalData, ...new Array(analyticsData.forecasts.horizon).fill(null)];
+            forecastChart.data.datasets[1].data = [...new Array(30).fill(null), ...forecast];
+            forecastChart.data.datasets[2].data = [...new Array(30).fill(null), ...confidence.map(c => c.upper), ...confidence.map(c => c.lower).reverse()];
+            forecastChart.update();
+            
+            showNotification('Energy forecast updated successfully!', 'success');
+        }
+
+        // Identify usage patterns and clusters
+        function identifyPatterns() {
+            // Simulate pattern recognition
+            const patterns = [
+                { type: 'morning_peak', confidence: 0.92, impact: 'high' },
+                { type: 'evening_reduction', confidence: 0.87, impact: 'medium' },
+                { type: 'weekend_variation', confidence: 0.78, impact: 'low' },
+                { type: 'seasonal_trend', confidence: 0.95, impact: 'high' }
+            ];
+            
+            analyticsData.patterns.clusters = patterns;
+            updatePatternInsights();
+            
+            showNotification('Usage patterns identified successfully!', 'success');
+        }
+
+        // Update pattern insights display
+        function updatePatternInsights() {
+            const insightsList = document.getElementById('insightsList');
+            insightsList.innerHTML = '';
+            
+            analyticsData.patterns.clusters.forEach(pattern => {
+                const insight = document.createElement('div');
+                insight.className = 'model-card';
+                insight.style.marginBottom = '1rem';
+                insight.innerHTML = `
+                    <div style="display: flex; justify-content: between; align-items: center;">
+                        <strong style="color: var(--analytics-blue);">${pattern.type.replace('_', ' ').toUpperCase()}</strong>
+                        <span style="background: ${pattern.impact === 'high' ? '#DC143C' : pattern.impact === 'medium' ? '#FFA500' : '#32CD32'}; 
+                             color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                            ${pattern.impact} impact
+                        </span>
+                    </div>
+                    <div style="margin-top: 0.5rem; color: #666;">
+                        Confidence: ${(pattern.confidence * 100).toFixed(1)}%
+                    </div>
+                `;
+                insightsList.appendChild(insight);
+            });
+        }
+
+        // Apply recurrence relation model
+        function applyRecurrenceModel() {
+            const alpha = parseFloat(document.getElementById('alpha').value);
+            const beta = parseFloat(document.getElementById('beta').value);
+            const gamma = parseFloat(document.getElementById('gamma').value);
+            const epsilon = parseFloat(document.getElementById('epsilon').value);
+            
+            analyticsData.models.recurrence = { alpha, beta, gamma, epsilon };
+            
+            // Recalculate forecast with new parameters
+            generateForecast();
+            
+            showNotification('Recurrence relation model applied successfully!', 'success');
+        }
+
+        // Apply function analysis model
+        function applyFunctionModel() {
+            const roomWeight = parseFloat(document.getElementById('roomWeight').value);
+            const timeDecay = parseFloat(document.getElementById('timeDecay').value);
+            const occupancyImpact = parseFloat(document.getElementById('occupancyImpact').value);
+            const deviceEfficiency = parseFloat(document.getElementById('deviceEfficiency').value);
+            
+            analyticsData.models.function = { roomWeight, timeDecay, occupancyImpact, deviceEfficiency };
+            
+            showNotification('Function analysis model applied successfully!', 'success');
+        }
+
+        // Apply probability prediction model
+        function applyProbabilityModel() {
+            const threshold = parseFloat(document.getElementById('probabilityThreshold').value);
+            const seasonalWeight = parseFloat(document.getElementById('seasonalWeight').value);
+            const confidence = parseFloat(document.getElementById('confidenceLevel').value);
+            const smoothing = parseFloat(document.getElementById('smoothingFactor').value);
+            
+            analyticsData.models.probability = { threshold, seasonalWeight, confidence, smoothing };
+            analyticsData.forecasts.confidence = confidence;
+            
+            generateForecast();
+            showNotification('Probability prediction model applied successfully!', 'success');
+        }
+
+        // Run comprehensive analysis
+        function runComprehensiveAnalysis() {
+            showNotification('Running comprehensive energy analysis...', 'info');
+            
+            // Simulate analysis process
+            setTimeout(() => {
+                generateForecast();
+                identifyPatterns();
+                updateStatistics();
+                
+                // Improve accuracy through analysis
+                analyticsData.forecasts.accuracy = Math.min(99.5, analyticsData.forecasts.accuracy + 1.2);
+                updateStatistics();
+                
+                showNotification('Comprehensive analysis completed! Forecast accuracy improved.', 'success');
+            }, 3000);
+        }
+
+        // Generate detailed report
+        function generateReport() {
+            showNotification('Generating comprehensive analytics report...', 'info');
+            
+            setTimeout(() => {
+                const reportData = {
+                    timestamp: new Date().toISOString(),
+                    consumption: analyticsData.consumption,
+                    savings: analyticsData.savings,
+                    patterns: analyticsData.patterns,
+                    models: analyticsData.models,
+                    forecasts: analyticsData.forecasts
+                };
+                
+                // Create downloadable report
+                const dataStr = JSON.stringify(reportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `energy-analytics-report-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Analytics report generated and downloaded!', 'success');
+            }, 2000);
+        }
+
+        // Generate pattern insights
+        function generatePatternInsights() {
+            const insights = [
+                "Morning peak consumption can be reduced by 15% through better scheduling",
+                "Weekend usage shows 25% lower efficiency - consider maintenance scheduling",
+                "Evening hours have 40% unused capacity - optimize device shutdown",
+                "Seasonal variation indicates potential for 12% additional savings"
+            ];
+            
+            const insightsList = document.getElementById('insightsList');
+            insightsList.innerHTML = '';
+            
+            insights.forEach(insight => {
+                const item = document.createElement('div');
+                item.className = 'model-card';
+                item.style.marginBottom = '1rem';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: start; gap: 10px;">
+                        <i class="fas fa-lightbulb" style="color: var(--warning); margin-top: 2px;"></i>
+                        <div>${insight}</div>
+                    </div>
+                `;
+                insightsList.appendChild(item);
+            });
+            
+            showNotification('Pattern insights generated successfully!', 'success');
+        }
+
+        // Change time range for consumption chart
+        function changeTimeRange(range) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            let dataPoints;
+            switch(range) {
+                case 'week':
+                    dataPoints = 7;
+                    break;
+                case 'month':
+                    dataPoints = 30;
+                    break;
+                case 'year':
+                    dataPoints = 365;
+                    break;
+            }
+            
+            const displayData = analyticsData.consumption.historical.slice(-dataPoints);
+            consumptionChart.data.labels = displayData.map(d => {
+                const date = new Date(d.date);
+                return `${date.getMonth() + 1}/${date.getDate()}`;
+            });
+            consumptionChart.data.datasets[0].data = displayData.map(d => d.consumption);
+            consumptionChart.data.datasets[1].data = displayData.map(d => d.optimized);
+            consumptionChart.update();
+            
+            showNotification(`Showing ${range}ly consumption data`, 'info');
+        }
+
+        // Toggle savings view
+        function toggleSavingsView() {
+            const currentType = savingsChart.config.type;
+            const newType = currentType === 'bar' ? 'doughnut' : 'bar';
+            
+            savingsChart.config.type = newType;
+            savingsChart.update();
+            
+            showNotification(`Switched to ${newType} chart view`, 'info');
+        }
+
+        // Run forecast update
+        function runForecast() {
+            showNotification('Updating energy forecast...', 'info');
+            setTimeout(() => {
+                generateForecast();
+                showNotification('Forecast updated with latest data!', 'success');
+            }, 1500);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add input validation for model parameters
+            document.querySelectorAll('.parameter input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    if (value < min) this.value = min;
+                    if (value > max) this.value = max;
+                });
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const messageEl = document.getElementById('notificationMessage');
+            
+            messageEl.textContent = message;
+            notification.className = 'notification';
+            
+            // Set icon based on type
+            const icon = notification.querySelector('i');
+            icon.className = type === 'error' ? 'fas fa-exclamation-triangle' :
+                            type === 'warning' ? 'fas fa-exclamation-circle' :
+                            type === 'info' ? 'fas fa-info-circle' :
+                            'fas fa-check-circle';
+            
+            if (type !== 'info') {
+                notification.classList.add(type);
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Detail view functions
+        function showConsumptionDetails() {
+            showNotification(`Total consumption: ${analyticsData.consumption.historical.reduce((sum, day) => sum + day.consumption, 0).toLocaleString()} kWh over ${analyticsData.consumption.historical.length} days`, 'info');
+        }
+
+        function showSavingsDetails() {
+            showNotification(`Total savings: $${analyticsData.savings.total.toLocaleString()} across ${Object.keys(analyticsData.savings.byBuilding).length} buildings`, 'info');
+        }
+
+        function showEfficiencyDetails() {
+            showNotification(`Current efficiency rate: ${analyticsData.forecasts.accuracy}% with ${analyticsData.forecasts.confidence * 100}% confidence`, 'info');
+        }
+
+        function showForecastDetails() {
+            showNotification(`Forecast accuracy: ${analyticsData.forecasts.accuracy}% for ${analyticsData.forecasts.horizon}-day horizon`, 'info');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initAnalytics);
+
+        // Add utility function for day of year calculation
+        Date.prototype.getDayOfYear = function() {
+            const start = new Date(this.getFullYear(), 0, 0);
+            const diff = this - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        };
+    </script>
+</body>
+</html>

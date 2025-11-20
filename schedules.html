@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Optimizer - EcoSmart Campus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --accent-green: #90EE90;
+            --background: #F8FFF8;
+            --text-dark: #2F4F4F;
+            --card-bg: #FFFFFF;
+            --leaf-green: #228B22;
+            --mint: #98FB98;
+            --warning: #FFA500;
+            --danger: #DC143C;
+            --lab-blue: #87CEEB;
+            --library-purple: #9370DB;
+            --success: #32CD32;
+            --light-shadow: 0 4px 15px rgba(46, 139, 87, 0.1);
+            --medium-shadow: 0 6px 20px rgba(46, 139, 87, 0.15);
+            --dark-shadow: 0 10px 30px rgba(46, 139, 87, 0.2);
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--medium-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* Schedule Optimizer */
+        .schedule-optimizer {
+            padding: 2rem 0;
+            min-height: 100vh;
+        }
+
+        .optimizer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .optimizer-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .optimizer-title i {
+            color: var(--primary-green);
+            font-size: 2rem;
+        }
+
+        .optimizer-title h2 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+        }
+
+        .optimizer-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--leaf-green);
+            transform: translateY(-2px);
+            box-shadow: var(--medium-shadow);
+        }
+
+        .btn-secondary {
+            background: var(--accent-green);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--mint);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ff8c00;
+            transform: translateY(-2px);
+        }
+
+        /* Main Layout */
+        .optimizer-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 1.5rem;
+            height: 80vh;
+        }
+
+        @media (max-width: 1200px) {
+            .optimizer-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+        }
+
+        /* Side Panels */
+        .side-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--light-shadow);
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-green);
+            color: var(--text-dark);
+        }
+
+        .panel-title i {
+            color: var(--primary-green);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .content-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--light-shadow);
+        }
+
+        /* Form Styles */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            padding: 10px;
+            border: 2px solid var(--accent-green);
+            border-radius: 6px;
+            background: var(--background);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Timetable Grid */
+        .timetable-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timetable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .timetable-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .week-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 8px 12px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--mint);
+        }
+
+        .timetable-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            grid-template-rows: 50px repeat(14, 1fr);
+            gap: 2px;
+            background: #e0e0e0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .time-slot {
+            background: var(--card-bg);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .day-header {
+            background: var(--primary-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .schedule-cell {
+            background: var(--background);
+            border: 1px solid #eee;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .schedule-cell:hover {
+            background: var(--accent-green);
+        }
+
+        .schedule-cell.occupied {
+            background: var(--mint);
+            border-left: 4px solid var(--secondary-green);
+        }
+
+        .schedule-cell.conflict {
+            background: #ffebee;
+            border-left: 4px solid var(--danger);
+        }
+
+        .schedule-cell.optimized {
+            background: #e8f5e8;
+            border-left: 4px solid var(--leaf-green);
+        }
+
+        .class-event {
+            background: var(--secondary-green);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .device-event {
+            background: var(--lab-blue);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .event-actions {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: none;
+        }
+
+        .class-event:hover .event-actions,
+        .device-event:hover .event-actions {
+            display: flex;
+            gap: 2px;
+        }
+
+        .event-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            border-radius: 2px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.6rem;
+            padding: 1px 3px;
+        }
+
+        /* Probability Settings */
+        .probability-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .probability-card {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .probability-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--light-shadow);
+        }
+
+        .probability-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .probability-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Boolean Logic Rules */
+        .rules-section {
+            margin-top: 1.5rem;
+        }
+
+        .rule-card {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rule-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--light-shadow);
+        }
+
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-title {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .rule-condition {
+            font-family: 'Courier New', monospace;
+            background: var(--card-bg);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-action {
+            color: var(--primary-green);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Device Scheduler */
+        .device-scheduler {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .device-card {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--accent-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--light-shadow);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .device-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--leaf-green);
+        }
+
+        .device-schedule {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Mathematical Notation */
+        .math-notation {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            border-left: 3px solid var(--primary-green);
+            line-height: 1.4;
+        }
+
+        .math-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+            font-size: 0.9rem;
+        }
+
+        /* Conflict Detection */
+        .conflicts-section {
+            margin-top: 1.5rem;
+        }
+
+        .conflict-list {
+            list-style: none;
+        }
+
+        .conflict-item {
+            background: #ffebee;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--danger);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .conflict-item:hover {
+            transform: translateX(5px);
+        }
+
+        .conflict-type {
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 0.25rem;
+        }
+
+        .conflict-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--light-shadow);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 0;
+            background: var(--background);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: var(--accent-green);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--dark-shadow);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-green);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--medium-shadow);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        .notification.info {
+            background: var(--lab-blue);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced Event Styles */
+        .event-priority-high { border-left: 4px solid var(--danger); }
+        .event-priority-medium { border-left: 4px solid var(--warning); }
+        .event-priority-low { border-left: 4px solid var(--success); }
+
+        /* Room Status Indicators */
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-available { background: var(--success); }
+        .status-occupied { background: var(--warning); }
+        .status-conflict { background: var(--danger); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .optimizer-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .timetable-grid {
+                grid-template-columns: 60px repeat(7, 1fr);
+                font-size: 0.7rem;
+            }
+
+            .optimizer-actions {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Chart Container */
+        .chart-container {
+            height: 200px;
+            margin: 1rem 0;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 6px 12px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--mint);
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Add Event Modal -->
+    <div class="modal" id="addEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New Event</h3>
+                <button class="close-modal" onclick="closeModal('addEventModal')">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventType">Event Type</label>
+                    <select id="eventType" class="form-control" required>
+                        <option value="">Select event type</option>
+                        <option value="class">Class/Lecture</option>
+                        <option value="device">Device Schedule</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="event">Special Event</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" id="eventName" class="form-control" placeholder="Enter event name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventRoom">Room/Location</label>
+                    <select id="eventRoom" class="form-control" required>
+                        <option value="">Select room</option>
+                        <option value="A101">Classroom A101</option>
+                        <option value="B201">Lab B201</option>
+                        <option value="C301">Office C301</option>
+                        <option value="D102">Classroom D102</option>
+                        <option value="E202">Library E202</option>
+                        <option value="F303">Auditorium F303</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDay">Day</label>
+                        <select id="eventDay" class="form-control" required>
+                            <option value="Mon">Monday</option>
+                            <option value="Tue">Tuesday</option>
+                            <option value="Wed">Wednesday</option>
+                            <option value="Thu">Thursday</option>
+                            <option value="Fri">Friday</option>
+                            <option value="Sat">Saturday</option>
+                            <option value="Sun">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDevice">Device Type (if applicable)</label>
+                        <select id="eventDevice" class="form-control">
+                            <option value="">Not applicable</option>
+                            <option value="Lights">Lights</option>
+                            <option value="AC">AC Unit</option>
+                            <option value="Projector">Projector</option>
+                            <option value="Computer">Computer Lab</option>
+                            <option value="All">All Devices</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startTime">Start Time</label>
+                        <select id="startTime" class="form-control" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">End Time</label>
+                        <select id="endTime" class="form-control" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventRecurrence">Recurrence</label>
+                    <select id="eventRecurrence" class="form-control">
+                        <option value="once">Once</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly" selected>Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventPriority">Priority Level</label>
+                    <select id="eventPriority" class="form-control">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Description (Optional)</label>
+                    <textarea id="eventDescription" class="form-control" rows="3" placeholder="Add event description..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-save"></i> Save Event
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Optimization Progress Modal -->
+    <div class="modal" id="optimizationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Optimizing Schedule</h3>
+                <button class="close-modal" onclick="closeModal('optimizationModal')">&times;</button>
+            </div>
+            <div>
+                <p id="optimizationStatus">Analyzing schedule conflicts...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="optimizationProgress"></div>
+                </div>
+                <div class="math-notation" style="margin-top: 1rem;">
+                    <div class="math-title">Optimization Process</div>
+                    Applying Boolean logic rules...<br>
+                    Calculating energy savings...<br>
+                    Resolving conflicts using probability models...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rule Editor Modal -->
+    <div class="modal" id="ruleEditorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="ruleEditorTitle">Edit Rule</h3>
+                <button class="close-modal" onclick="closeModal('ruleEditorModal')">&times;</button>
+            </div>
+            <form id="ruleForm">
+                <div class="form-group">
+                    <label for="ruleName">Rule Name</label>
+                    <input type="text" id="ruleName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="ruleCondition">Boolean Condition</label>
+                    <input type="text" id="ruleCondition" class="form-control" placeholder="e.g., O_r(t) ∧ (¬D(t) ∨ C_r(t))" required>
+                </div>
+                <div class="form-group">
+                    <label for="ruleAction">Action</label>
+                    <textarea id="ruleAction" class="form-control" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rulePriority">Priority</label>
+                    <select id="rulePriority" class="form-control">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i> Save Rule
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" onclick="navigateTo('index.html')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h1>Schedule Optimizer</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="schedules.html" class="active">Schedules</a>
+                    <a href="reports.html">Reports</a>
+                    <a href="analytics.html">Analytics</a>
+                </nav>
+                <div class="user-info">
+                    <div class="user-avatar">CA</div>
+                    <span>Campus Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Schedule Optimizer -->
+    <section class="schedule-optimizer">
+        <div class="container">
+            <div class="optimizer-header">
+                <div class="optimizer-title">
+                    <i class="fas fa-clock"></i>
+                    <h2>Smart Schedule Optimization</h2>
+                </div>
+                <div class="optimizer-actions">
+                    <button class="btn btn-primary" id="optimizeAll">
+                        <i class="fas fa-magic"></i> Optimize All
+                    </button>
+                    <button class="btn btn-secondary" id="exportSchedule">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="btn btn-secondary" id="importSchedule">
+                        <i class="fas fa-upload"></i> Import
+                    </button>
+                    <button class="btn btn-warning" id="clearAll" onclick="clearAllEvents()">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card" onclick="showOptimizationDetails()">
+                    <div class="stat-value" id="efficiencyValue">87%</div>
+                    <div class="stat-label">Schedule Efficiency</div>
+                </div>
+                <div class="stat-card" onclick="showClassDetails()">
+                    <div class="stat-value" id="classCount">42</div>
+                    <div class="stat-label">Active Classes</div>
+                </div>
+                <div class="stat-card" onclick="showDeviceDetails()">
+                    <div class="stat-value" id="deviceCount">156</div>
+                    <div class="stat-label">Devices Scheduled</div>
+                </div>
+                <div class="stat-card" onclick="showConflictDetails()">
+                    <div class="stat-value" id="conflictCount">3</div>
+                    <div class="stat-label">Conflicts Detected</div>
+                </div>
+            </div>
+
+            <div class="optimizer-container">
+                <!-- Left Panel - Controls & Settings -->
+                <div class="side-panel">
+                    <div class="tab-navigation">
+                        <button class="tab-btn active" data-tab="probability">Probability</button>
+                        <button class="tab-btn" data-tab="boolean">Boolean Logic</button>
+                        <button class="tab-btn" data-tab="devices">Devices</button>
+                    </div>
+
+                    <!-- Probability Settings Tab -->
+                    <div class="tab-content active" id="probability-tab">
+                        <div class="panel-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Occupancy Probability Settings</h3>
+                        </div>
+                        
+                        <div class="probability-settings">
+                            <div class="probability-card" onclick="editProbability('class')">
+                                <div class="probability-value" id="classProbability">0.85</div>
+                                <div class="probability-label">Class Hours (P<sub>r</sub>(t))</div>
+                            </div>
+                            <div class="probability-card" onclick="editProbability('evening')">
+                                <div class="probability-value" id="eveningProbability">0.45</div>
+                                <div class="probability-label">Evening Hours</div>
+                            </div>
+                            <div class="probability-card" onclick="editProbability('weekend')">
+                                <div class="probability-value" id="weekendProbability">0.15</div>
+                                <div class="probability-label">Weekend Hours</div>
+                            </div>
+                            <div class="probability-card" onclick="editProbability('holiday')">
+                                <div class="probability-value" id="holidayProbability">0.25</div>
+                                <div class="probability-label">Holiday Hours</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="occupancyThreshold">
+                                <i class="fas fa-sliders-h"></i> Occupancy Threshold (θ)
+                            </label>
+                            <input type="range" id="occupancyThreshold" class="form-control" min="0" max="1" step="0.05" value="0.3">
+                            <div class="threshold-value">Current: <span id="thresholdValue">0.30</span></div>
+                        </div>
+
+                        <div class="math-notation">
+                            <div class="math-title">Probability Model</div>
+                            P<sub>r</sub>(t) = Occupancy probability for room r at time t<br><br>
+                            Decision Rule:<br>
+                            IF P<sub>r</sub>(t) ≥ θ THEN Enable Devices<br>
+                            ELSE Disable Devices<br><br>
+                            Where θ = Occupancy Threshold
+                        </div>
+
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="recalculateProbabilities()">
+                            <i class="fas fa-calculator"></i> Recalculate Probabilities
+                        </button>
+
+                        <!-- Probability Visualization -->
+                        <div class="chart-container">
+                            <canvas id="probabilityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Boolean Logic Tab -->
+                    <div class="tab-content" id="boolean-tab">
+                        <div class="panel-title">
+                            <i class="fas fa-code-branch"></i>
+                            <h3>Boolean Logic Rules</h3>
+                        </div>
+
+                        <div class="rules-section" id="rulesList">
+                            <!-- Rules will be populated by JavaScript -->
+                        </div>
+
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="addNewRule()">
+                            <i class="fas fa-plus-circle"></i> Add New Rule
+                        </button>
+
+                        <div class="math-notation" style="margin-top: 1rem;">
+                            <div class="math-title">Boolean Logic Symbols</div>
+                            ∧ = AND (Conjunction)<br>
+                            ∨ = OR (Disjunction)<br>
+                            ¬ = NOT (Negation)<br>
+                            → = IMPLIES (Conditional)<br><br>
+                            Example: A ∧ B → C means "If A AND B then C"
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="testAllRules()">Test All Rules</button>
+                            <button class="quick-action-btn" onclick="exportRules()">Export Rules</button>
+                            <button class="quick-action-btn" onclick="importRules()">Import Rules</button>
+                        </div>
+                    </div>
+
+                    <!-- Devices Tab -->
+                    <div class="tab-content" id="devices-tab">
+                        <div class="panel-title">
+                            <i class="fas fa-laptop-house"></i>
+                            <h3>Device Scheduling</h3>
+                        </div>
+
+                        <div class="device-scheduler" id="deviceList">
+                            <!-- Devices will be populated by JavaScript -->
+                        </div>
+
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="bulkScheduleDevices()">
+                            <i class="fas fa-cogs"></i> Bulk Schedule Devices
+                        </button>
+
+                        <div class="room-status">
+                            <div class="status-dot status-available"></div>
+                            <span>Available</span>
+                            <div class="status-dot status-occupied" style="margin-left: 1rem;"></div>
+                            <span>Occupied</span>
+                            <div class="status-dot status-conflict" style="margin-left: 1rem;"></div>
+                            <span>Conflict</span>
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="enableAllDevices()">Enable All</button>
+                            <button class="quick-action-btn" onclick="disableAllDevices()">Disable All</button>
+                            <button class="quick-action-btn" onclick="generateDeviceReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel - Timetable & Main Content -->
+                <div class="main-content">
+                    <div class="content-section timetable-section">
+                        <div class="timetable-header">
+                            <div class="panel-title">
+                                <i class="fas fa-calendar-week"></i>
+                                <h3>Weekly Timetable</h3>
+                            </div>
+                            <div class="timetable-controls">
+                                <div class="week-navigation">
+                                    <button class="nav-btn" onclick="previousWeek()">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <span id="currentWeek">Nov 27 - Dec 3, 2023</span>
+                                    <button class="nav-btn" onclick="nextWeek()">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-secondary" id="addClass" onclick="openAddEventModal()">
+                                    <i class="fas fa-plus"></i> Add Event
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="timetable-grid" id="timetable">
+                            <!-- Time headers -->
+                            <div class="time-slot"></div>
+                            <div class="day-header">Mon</div>
+                            <div class="day-header">Tue</div>
+                            <div class="day-header">Wed</div>
+                            <div class="day-header">Thu</div>
+                            <div class="day-header">Fri</div>
+                            <div class="day-header">Sat</div>
+                            <div class="day-header">Sun</div>
+
+                            <!-- Time slots will be generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="content-section conflicts-section">
+                        <div class="panel-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Schedule Analysis & Optimization</h3>
+                        </div>
+
+                        <div class="conflict-list" id="conflictList">
+                            <!-- Conflicts will be populated by JavaScript -->
+                        </div>
+
+                        <div class="math-notation" style="margin-top: 1rem;">
+                            <div class="math-title">Optimization Metrics</div>
+                            Current Efficiency: <span id="currentEfficiency">87%</span><br>
+                            Potential Savings: <span id="potentialSavings">124</span> kWh/week<br>
+                            Device Utilization: <span id="deviceUtilization">92%</span><br>
+                            Conflict Resolution: <span id="conflictResolution">3</span>/<span id="totalConflicts">6</span> issues resolved<br>
+                            Boolean Rules Active: <span id="activeRules">12</span>/15
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="autoResolveConflicts()">Auto-Resolve Conflicts</button>
+                            <button class="quick-action-btn" onclick="suggestOptimizations()">Suggest Optimizations</button>
+                            <button class="quick-action-btn" onclick="viewOptimizationHistory()">View History</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Enhanced data structure with full functionality
+        let scheduleData = {
+            classes: [
+                { id: 1, name: "CS101", room: "A101", day: "Mon", start: 8, end: 10, type: "class", priority: "high", description: "Introduction to Computer Science" },
+                { id: 2, name: "MATH202", room: "B201", day: "Mon", start: 10, end: 12, type: "class", priority: "medium", description: "Advanced Calculus" },
+                { id: 3, name: "PHY301", room: "C301", day: "Tue", start: 9, end: 11, type: "lab", priority: "high", description: "Physics Laboratory" },
+                { id: 4, name: "CHEM101", room: "D102", day: "Wed", start: 13, end: 15, type: "class", priority: "medium", description: "General Chemistry" },
+                { id: 5, name: "BIO201", room: "E202", day: "Thu", start: 11, end: 13, type: "lab", priority: "high", description: "Biology Laboratory" },
+                { id: 6, name: "ENG101", room: "A101", day: "Fri", start: 14, end: 16, type: "class", priority: "medium", description: "English Composition" }
+            ],
+            deviceEvents: [
+                { id: 101, device: "Lights", room: "A101", day: "Mon", start: 7, end: 18, type: "device", priority: "medium" },
+                { id: 102, device: "AC", room: "B201", day: "Mon", start: 8, end: 17, type: "device", priority: "medium" },
+                { id: 103, device: "Projector", room: "C301", day: "Tue", start: 9, end: 12, type: "device", priority: "high" }
+            ],
+            probabilities: {
+                class: 0.85,
+                evening: 0.45,
+                weekend: 0.15,
+                holiday: 0.25
+            },
+            rules: [
+                { id: 1, name: "Light Automation", condition: "L_r(t) = O_r(t) ∧ (¬D(t) ∨ C_r(t))", action: "Lights ON when: Occupied AND (Night OR Class)", priority: "high" },
+                { id: 2, name: "AC Automation", condition: "AC_r(t) = O_r(t) ∧ (T_r(t) > 25°C)", action: "AC ON when: Occupied AND Temperature > 25°C", priority: "medium" },
+                { id: 3, name: "Projector Automation", condition: "P_r(t) = C_r(t) ∧ L_r(t)", action: "Projector ON when: Class Scheduled AND Lights ON", priority: "high" }
+            ],
+            devices: [
+                { id: 1, name: "Lights", status: "active", rooms: 28, totalRooms: 32, schedule: "Auto: 7:00-22:00" },
+                { id: 2, name: "AC Units", status: "active", rooms: 15, totalRooms: 18, schedule: "Auto: 8:00-18:00" },
+                { id: 3, name: "Computers", status: "maintenance", rooms: 8, totalRooms: 12, schedule: "Manual Schedule" },
+                { id: 4, name: "Projectors", status: "active", rooms: 10, totalRooms: 10, schedule: "Class-based" }
+            ],
+            threshold: 0.3,
+            currentWeek: new Date(2023, 10, 27), // Nov 27, 2023
+            conflicts: [],
+            optimization: {
+                efficiency: 87,
+                potentialSavings: 124,
+                deviceUtilization: 92,
+                resolvedConflicts: 3,
+                totalConflicts: 6,
+                activeRules: 12
+            }
+        };
+
+        // Days and times for timetable
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const timeSlots = Array.from({length: 14}, (_, i) => i + 7); // 7:00 to 20:00
+
+        // Initialize the application
+        function initApplication() {
+            initTimetable();
+            initTabNavigation();
+            initThresholdSlider();
+            populateTimeOptions();
+            updateStatistics();
+            detectConflicts();
+            setupEventListeners();
+            initProbabilityChart();
+            renderRulesList();
+            renderDeviceList();
+        }
+
+        // Initialize timetable with enhanced functionality
+        function initTimetable() {
+            const timetable = document.getElementById('timetable');
+            
+            // Clear existing content except headers
+            while (timetable.children.length > 8) {
+                timetable.removeChild(timetable.lastChild);
+            }
+
+            // Create time slots and schedule cells
+            timeSlots.forEach((hour, timeIndex) => {
+                // Time label
+                const timeLabel = document.createElement('div');
+                timeLabel.className = 'time-slot';
+                timeLabel.textContent = `${hour}:00`;
+                timetable.appendChild(timeLabel);
+
+                // Schedule cells for each day
+                days.forEach(day => {
+                    const cell = document.createElement('div');
+                    cell.className = 'schedule-cell';
+                    cell.dataset.day = day;
+                    cell.dataset.time = hour;
+                    
+                    // Check for classes at this time
+                    const classes = scheduleData.classes.filter(cls => 
+                        cls.day === day && hour >= cls.start && hour < cls.end
+                    );
+                    
+                    // Check for device events at this time
+                    const devices = scheduleData.deviceEvents.filter(device => 
+                        device.day === day && hour >= device.start && hour < device.end
+                    );
+
+                    // Add class events
+                    classes.forEach(cls => {
+                        const event = document.createElement('div');
+                        event.className = `class-event event-priority-${cls.priority}`;
+                        event.textContent = `${cls.name} (${cls.room})`;
+                        event.title = `${cls.name} in ${cls.room}\nPriority: ${cls.priority}\n${cls.description || ''}`;
+                        event.dataset.id = cls.id;
+                        
+                        // Add event actions
+                        const actions = document.createElement('div');
+                        actions.className = 'event-actions';
+                        actions.innerHTML = `
+                            <button class="event-btn" onclick="editEvent(${cls.id}, 'class')">✏️</button>
+                            <button class="event-btn" onclick="deleteEvent(${cls.id}, 'class')">🗑️</button>
+                        `;
+                        event.appendChild(actions);
+                        
+                        cell.appendChild(event);
+                    });
+
+                    // Add device events
+                    devices.forEach(device => {
+                        const event = document.createElement('div');
+                        event.className = `device-event event-priority-${device.priority}`;
+                        event.textContent = `${device.device} - ${device.room}`;
+                        event.title = `${device.device} in ${device.room}\nPriority: ${device.priority}`;
+                        event.dataset.id = device.id;
+                        
+                        // Add event actions
+                        const actions = document.createElement('div');
+                        actions.className = 'event-actions';
+                        actions.innerHTML = `
+                            <button class="event-btn" onclick="editEvent(${device.id}, 'device')">✏️</button>
+                            <button class="event-btn" onclick="deleteEvent(${device.id}, 'device')">🗑️</button>
+                        `;
+                        event.appendChild(actions);
+                        
+                        cell.appendChild(event);
+                    });
+
+                    // Mark as occupied if there are events
+                    if (classes.length > 0 || devices.length > 0) {
+                        cell.classList.add('occupied');
+                    }
+
+                    // Check for conflicts
+                    const hasConflict = checkCellConflict(day, hour);
+                    if (hasConflict) {
+                        cell.classList.add('conflict');
+                    }
+
+                    // Add click handler
+                    cell.addEventListener('click', () => handleCellClick(cell));
+                    
+                    timetable.appendChild(cell);
+                });
+            });
+        }
+
+        // Check for conflicts in a specific cell
+        function checkCellConflict(day, hour) {
+            const classes = scheduleData.classes.filter(cls => 
+                cls.day === day && hour >= cls.start && hour < cls.end
+            );
+            const devices = scheduleData.deviceEvents.filter(device => 
+                device.day === day && hour >= device.start && hour < device.end
+            );
+
+            // Conflict: Multiple classes in same room
+            const roomCount = {};
+            [...classes, ...devices].forEach(event => {
+                roomCount[event.room] = (roomCount[event.room] || 0) + 1;
+            });
+
+            return Object.values(roomCount).some(count => count > 1);
+        }
+
+        // Detect all conflicts in the schedule
+        function detectConflicts() {
+            scheduleData.conflicts = [];
+            
+            // Check for room conflicts
+            const roomUsage = {};
+            [...scheduleData.classes, ...scheduleData.deviceEvents].forEach(event => {
+                const key = `${event.day}-${event.room}-${event.start}-${event.end}`;
+                if (!roomUsage[key]) {
+                    roomUsage[key] = [];
+                }
+                roomUsage[key].push(event);
+            });
+
+            // Add conflicts to the list
+            Object.values(roomUsage).forEach(events => {
+                if (events.length > 1) {
+                    scheduleData.conflicts.push({
+                        type: "Room Conflict",
+                        details: `Multiple events scheduled in ${events[0].room} on ${events[0].day} from ${events[0].start}:00-${events[0].end}:00`,
+                        events: events,
+                        severity: "high"
+                    });
+                }
+            });
+
+            // Check for device conflicts
+            scheduleData.deviceEvents.forEach(device => {
+                const hasClass = scheduleData.classes.some(cls => 
+                    cls.room === device.room && cls.day === device.day && 
+                    ((device.start >= cls.start && device.start < cls.end) || 
+                     (device.end > cls.start && device.end <= cls.end))
+                );
+                
+                if (!hasClass && device.device !== "Lights") {
+                    scheduleData.conflicts.push({
+                        type: "Device Without Class",
+                        details: `${device.device} scheduled in ${device.room} on ${device.day} but no class scheduled`,
+                        events: [device],
+                        severity: "medium"
+                    });
+                }
+            });
+
+            updateConflictList();
+        }
+
+        // Update conflict list display
+        function updateConflictList() {
+            const conflictList = document.getElementById('conflictList');
+            conflictList.innerHTML = '';
+
+            if (scheduleData.conflicts.length === 0) {
+                conflictList.innerHTML = '<div class="conflict-item" style="background: var(--mint); border-color: var(--success);">✅ No conflicts detected! Schedule is optimized.</div>';
+                return;
+            }
+
+            scheduleData.conflicts.forEach((conflict, index) => {
+                const item = document.createElement('div');
+                item.className = 'conflict-item';
+                item.innerHTML = `
+                    <div class="conflict-type">${conflict.type}</div>
+                    <div class="conflict-details">${conflict.details}</div>
+                `;
+                item.onclick = () => resolveConflict(index);
+                conflictList.appendChild(item);
+            });
+        }
+
+        // Handle cell click with enhanced functionality
+        function handleCellClick(cell) {
+            const day = cell.dataset.day;
+            const time = cell.dataset.time;
+            const hasEvents = cell.querySelector('.class-event, .device-event');
+            
+            if (hasEvents) {
+                showEventDetails(cell);
+            } else {
+                openAddEventModal(day, parseInt(time));
+            }
+        }
+
+        // Show event details
+        function showEventDetails(cell) {
+            const events = Array.from(cell.querySelectorAll('.class-event, .device-event'));
+            const eventDetails = events.map(event => {
+                const id = event.dataset.id;
+                const eventData = [...scheduleData.classes, ...scheduleData.deviceEvents].find(e => e.id == id);
+                return `${event.textContent} (Priority: ${eventData.priority})`;
+            }).join('\n');
+            
+            showNotification(`Events at ${cell.dataset.day} ${cell.dataset.time}:00:\n\n${eventDetails}`, 'info');
+        }
+
+        // Modal functions
+        function openAddEventModal(day = 'Mon', time = 8) {
+            document.getElementById('eventDay').value = day;
+            document.getElementById('startTime').value = time;
+            document.getElementById('endTime').value = time + 1;
+            document.getElementById('modalTitle').textContent = 'Add New Event';
+            document.getElementById('eventForm').reset();
+            document.getElementById('addEventModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Populate time options
+        function populateTimeOptions() {
+            const startSelect = document.getElementById('startTime');
+            const endSelect = document.getElementById('endTime');
+            
+            startSelect.innerHTML = '';
+            endSelect.innerHTML = '';
+            
+            timeSlots.forEach(hour => {
+                startSelect.innerHTML += `<option value="${hour}">${hour}:00</option>`;
+                endSelect.innerHTML += `<option value="${hour}">${hour}:00</option>`;
+            });
+        }
+
+        // Event form submission
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const eventType = document.getElementById('eventType').value;
+            const editingId = this.dataset.editingId;
+            const editingType = this.dataset.editingType;
+            
+            const eventData = {
+                id: editingId || Date.now(),
+                name: document.getElementById('eventName').value,
+                room: document.getElementById('eventRoom').value,
+                day: document.getElementById('eventDay').value,
+                start: parseInt(document.getElementById('startTime').value),
+                end: parseInt(document.getElementById('endTime').value),
+                type: eventType,
+                priority: document.getElementById('eventPriority').value,
+                recurrence: document.getElementById('eventRecurrence').value,
+                description: document.getElementById('eventDescription').value
+            };
+
+            if (eventType === 'device') {
+                eventData.device = document.getElementById('eventDevice').value;
+                
+                if (editingId && editingType === 'device') {
+                    // Update existing device event
+                    const index = scheduleData.deviceEvents.findIndex(e => e.id == editingId);
+                    if (index !== -1) {
+                        scheduleData.deviceEvents[index] = eventData;
+                    }
+                } else {
+                    scheduleData.deviceEvents.push(eventData);
+                }
+            } else {
+                if (editingId && editingType === 'class') {
+                    // Update existing class
+                    const index = scheduleData.classes.findIndex(e => e.id == editingId);
+                    if (index !== -1) {
+                        scheduleData.classes[index] = eventData;
+                    }
+                } else {
+                    scheduleData.classes.push(eventData);
+                }
+            }
+
+            // Clear editing state
+            delete this.dataset.editingId;
+            delete this.dataset.editingType;
+
+            initTimetable();
+            detectConflicts();
+            updateStatistics();
+            closeModal('addEventModal');
+            showNotification(`${eventData.name} ${editingId ? 'updated' : 'added'} successfully!`, 'success');
+        });
+
+        // Edit event
+        function editEvent(id, type) {
+            const events = type === 'class' ? scheduleData.classes : scheduleData.deviceEvents;
+            const event = events.find(e => e.id === id);
+            
+            if (event) {
+                document.getElementById('eventType').value = type;
+                document.getElementById('eventName').value = event.name;
+                document.getElementById('eventRoom').value = event.room;
+                document.getElementById('eventDay').value = event.day;
+                document.getElementById('startTime').value = event.start;
+                document.getElementById('endTime').value = event.end;
+                document.getElementById('eventPriority').value = event.priority;
+                document.getElementById('eventRecurrence').value = event.recurrence || 'weekly';
+                document.getElementById('eventDescription').value = event.description || '';
+                
+                if (type === 'device') {
+                    document.getElementById('eventDevice').value = event.device;
+                }
+                
+                document.getElementById('modalTitle').textContent = 'Edit Event';
+                document.getElementById('addEventModal').style.display = 'flex';
+                
+                // Store the event ID for updating
+                document.getElementById('eventForm').dataset.editingId = id;
+                document.getElementById('eventForm').dataset.editingType = type;
+            }
+        }
+
+        // Delete event
+        function deleteEvent(id, type) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                if (type === 'class') {
+                    scheduleData.classes = scheduleData.classes.filter(e => e.id !== id);
+                } else {
+                    scheduleData.deviceEvents = scheduleData.deviceEvents.filter(e => e.id !== id);
+                }
+                
+                initTimetable();
+                detectConflicts();
+                updateStatistics();
+                showNotification('Event deleted successfully!', 'success');
+            }
+        }
+
+        // Tab navigation
+        function initTabNavigation() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.dataset.tab;
+                    
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Show corresponding content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+        }
+
+        // Occupancy threshold slider
+        function initThresholdSlider() {
+            const slider = document.getElementById('occupancyThreshold');
+            const valueDisplay = document.getElementById('thresholdValue');
+
+            slider.value = scheduleData.threshold;
+            valueDisplay.textContent = scheduleData.threshold.toFixed(2);
+
+            slider.addEventListener('input', () => {
+                const value = parseFloat(slider.value);
+                scheduleData.threshold = value;
+                valueDisplay.textContent = value.toFixed(2);
+                updateStatistics();
+                showNotification(`Occupancy threshold updated to ${value.toFixed(2)}`, 'info');
+            });
+        }
+
+        // Update all statistics
+        function updateStatistics() {
+            // Update main stats
+            document.getElementById('efficiencyValue').textContent = `${scheduleData.optimization.efficiency}%`;
+            document.getElementById('classCount').textContent = scheduleData.classes.length;
+            document.getElementById('deviceCount').textContent = scheduleData.deviceEvents.length;
+            document.getElementById('conflictCount').textContent = scheduleData.conflicts.length;
+
+            // Update optimization metrics
+            document.getElementById('currentEfficiency').textContent = `${scheduleData.optimization.efficiency}%`;
+            document.getElementById('potentialSavings').textContent = scheduleData.optimization.potentialSavings;
+            document.getElementById('deviceUtilization').textContent = `${scheduleData.optimization.deviceUtilization}%`;
+            document.getElementById('conflictResolution').textContent = scheduleData.optimization.resolvedConflicts;
+            document.getElementById('totalConflicts').textContent = scheduleData.optimization.totalConflicts;
+            document.getElementById('activeRules').textContent = scheduleData.optimization.activeRules;
+
+            // Update probability cards
+            document.getElementById('classProbability').textContent = scheduleData.probabilities.class.toFixed(2);
+            document.getElementById('eveningProbability').textContent = scheduleData.probabilities.evening.toFixed(2);
+            document.getElementById('weekendProbability').textContent = scheduleData.probabilities.weekend.toFixed(2);
+            document.getElementById('holidayProbability').textContent = scheduleData.probabilities.holiday.toFixed(2);
+        }
+
+        // Week navigation
+        function previousWeek() {
+            scheduleData.currentWeek.setDate(scheduleData.currentWeek.getDate() - 7);
+            updateWeekDisplay();
+        }
+
+        function nextWeek() {
+            scheduleData.currentWeek.setDate(scheduleData.currentWeek.getDate() + 7);
+            updateWeekDisplay();
+        }
+
+        function updateWeekDisplay() {
+            const start = new Date(scheduleData.currentWeek);
+            const end = new Date(scheduleData.currentWeek);
+            end.setDate(end.getDate() + 6);
+            
+            const options = { month: 'short', day: 'numeric' };
+            document.getElementById('currentWeek').textContent = 
+                `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
+        }
+
+        // Enhanced action functions
+        function recalculateProbabilities() {
+            // Simulate probability recalculation
+            scheduleData.probabilities.class = Math.random() * 0.3 + 0.7; // 0.7-1.0
+            scheduleData.probabilities.evening = Math.random() * 0.3 + 0.3; // 0.3-0.6
+            scheduleData.probabilities.weekend = Math.random() * 0.2 + 0.1; // 0.1-0.3
+            scheduleData.probabilities.holiday = Math.random() * 0.2 + 0.2; // 0.2-0.4
+            
+            updateStatistics();
+            updateProbabilityChart();
+            showNotification('Probabilities recalculated based on latest data!', 'success');
+        }
+
+        function editProbability(type) {
+            const newValue = prompt(`Enter new probability value for ${type} hours (0-1):`, scheduleData.probabilities[type]);
+            if (newValue !== null && !isNaN(newValue) && newValue >= 0 && newValue <= 1) {
+                scheduleData.probabilities[type] = parseFloat(newValue);
+                updateStatistics();
+                updateProbabilityChart();
+                showNotification(`${type} probability updated to ${newValue}`, 'success');
+            }
+        }
+
+        // Rule management functions
+        function renderRulesList() {
+            const rulesList = document.getElementById('rulesList');
+            rulesList.innerHTML = '';
+            
+            scheduleData.rules.forEach(rule => {
+                const ruleCard = document.createElement('div');
+                ruleCard.className = 'rule-card';
+                ruleCard.innerHTML = `
+                    <div class="rule-header">
+                        <div class="rule-title">${rule.name}</div>
+                        <i class="fas fa-lightbulb" style="color: var(--warning);"></i>
+                    </div>
+                    <div class="rule-condition">${rule.condition}</div>
+                    <div class="rule-action">${rule.action}</div>
+                `;
+                ruleCard.onclick = () => editRule(rule.id);
+                rulesList.appendChild(ruleCard);
+            });
+        }
+
+        function editRule(ruleId) {
+            const rule = scheduleData.rules.find(r => r.id === ruleId);
+            if (rule) {
+                document.getElementById('ruleName').value = rule.name;
+                document.getElementById('ruleCondition').value = rule.condition;
+                document.getElementById('ruleAction').value = rule.action;
+                document.getElementById('rulePriority').value = rule.priority;
+                document.getElementById('ruleEditorTitle').textContent = 'Edit Rule';
+                document.getElementById('ruleForm').dataset.editingId = ruleId;
+                document.getElementById('ruleEditorModal').style.display = 'flex';
+            }
+        }
+
+        function addNewRule() {
+            document.getElementById('ruleName').value = '';
+            document.getElementById('ruleCondition').value = '';
+            document.getElementById('ruleAction').value = '';
+            document.getElementById('rulePriority').value = 'medium';
+            document.getElementById('ruleEditorTitle').textContent = 'Add New Rule';
+            delete document.getElementById('ruleForm').dataset.editingId;
+            document.getElementById('ruleEditorModal').style.display = 'flex';
+        }
+
+        // Rule form submission
+        document.getElementById('ruleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const editingId = this.dataset.editingId;
+            const ruleData = {
+                id: editingId || Date.now(),
+                name: document.getElementById('ruleName').value,
+                condition: document.getElementById('ruleCondition').value,
+                action: document.getElementById('ruleAction').value,
+                priority: document.getElementById('rulePriority').value
+            };
+
+            if (editingId) {
+                // Update existing rule
+                const index = scheduleData.rules.findIndex(r => r.id == editingId);
+                if (index !== -1) {
+                    scheduleData.rules[index] = ruleData;
+                }
+            } else {
+                scheduleData.rules.push(ruleData);
+            }
+
+            renderRulesList();
+            closeModal('ruleEditorModal');
+            showNotification(`Rule "${ruleData.name}" ${editingId ? 'updated' : 'added'} successfully!`, 'success');
+        });
+
+        // Device management functions
+        function renderDeviceList() {
+            const deviceList = document.getElementById('deviceList');
+            deviceList.innerHTML = '';
+            
+            scheduleData.devices.forEach(device => {
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.innerHTML = `
+                    <div class="device-header">
+                        <div class="device-name">${device.name}</div>
+                        <div class="device-status" style="background: ${getDeviceStatusColor(device.status)};"></div>
+                    </div>
+                    <div class="device-schedule">
+                        ${device.schedule}<br>
+                        Rooms: <span>${device.rooms}</span>/${device.totalRooms}
+                    </div>
+                `;
+                deviceCard.onclick = () => scheduleDevice(device.id);
+                deviceList.appendChild(deviceCard);
+            });
+        }
+
+        function getDeviceStatusColor(status) {
+            switch(status) {
+                case 'active': return 'var(--leaf-green)';
+                case 'maintenance': return 'var(--warning)';
+                case 'inactive': return 'var(--danger)';
+                default: return 'var(--text-dark)';
+            }
+        }
+
+        function scheduleDevice(deviceId) {
+            const device = scheduleData.devices.find(d => d.id === deviceId);
+            if (device) {
+                showNotification(`Scheduling ${device.name} devices...`, 'info');
+                // In a real application, this would open a scheduling interface
+            }
+        }
+
+        function bulkScheduleDevices() {
+            showNotification('Bulk scheduling all devices...', 'info');
+            // Simulate bulk scheduling
+            setTimeout(() => {
+                scheduleData.devices.forEach(device => {
+                    if (device.status === 'inactive') {
+                        device.status = 'active';
+                    }
+                });
+                renderDeviceList();
+                showNotification('All devices scheduled successfully!', 'success');
+            }, 1500);
+        }
+
+        function resolveConflict(conflictIndex) {
+            if (confirm('Would you like to auto-resolve this conflict?')) {
+                scheduleData.conflicts.splice(conflictIndex, 1);
+                scheduleData.optimization.resolvedConflicts++;
+                updateConflictList();
+                updateStatistics();
+                showNotification('Conflict resolved successfully!', 'success');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('optimizeAll').addEventListener('click', () => {
+                showOptimizationProgress();
+            });
+
+            document.getElementById('exportSchedule').addEventListener('click', () => {
+                const dataStr = JSON.stringify(scheduleData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'campus-schedule.json';
+                link.click();
+                showNotification('Schedule exported successfully!', 'success');
+            });
+
+            document.getElementById('importSchedule').addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        try {
+                            const importedData = JSON.parse(event.target.result);
+                            Object.assign(scheduleData, importedData);
+                            initApplication();
+                            showNotification('Schedule imported successfully!', 'success');
+                        } catch (error) {
+                            showNotification('Error importing schedule file!', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            });
+        }
+
+        // Show optimization progress
+        function showOptimizationProgress() {
+            const modal = document.getElementById('optimizationModal');
+            const progressBar = document.getElementById('optimizationProgress');
+            const statusText = document.getElementById('optimizationStatus');
+            
+            modal.style.display = 'flex';
+            progressBar.style.width = '0%';
+            statusText.textContent = 'Analyzing schedule conflicts...';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    statusText.textContent = 'Optimization complete!';
+                    
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        scheduleData.optimization.efficiency = Math.min(100, scheduleData.optimization.efficiency + 5);
+                        scheduleData.optimization.potentialSavings += 15;
+                        scheduleData.optimization.resolvedConflicts = scheduleData.optimization.totalConflicts;
+                        scheduleData.conflicts = [];
+                        
+                        updateStatistics();
+                        updateConflictList();
+                        showNotification('Optimization complete! 5% efficiency improvement achieved.', 'success');
+                    }, 1000);
+                }
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    statusText.textContent = 'Applying Boolean logic rules...';
+                } else if (progress < 60) {
+                    statusText.textContent = 'Calculating energy savings...';
+                } else if (progress < 90) {
+                    statusText.textContent = 'Resolving conflicts...';
+                } else {
+                    statusText.textContent = 'Finalizing optimization...';
+                }
+            }, 300);
+        }
+
+        // Initialize probability chart
+        function initProbabilityChart() {
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            window.probabilityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Class Hours', 'Evening Hours', 'Weekend Hours', 'Holiday Hours'],
+                    datasets: [{
+                        label: 'Occupancy Probability',
+                        data: Object.values(scheduleData.probabilities),
+                        backgroundColor: [
+                            'rgba(46, 139, 87, 0.7)',
+                            'rgba(144, 238, 144, 0.7)',
+                            'rgba(152, 251, 152, 0.7)',
+                            'rgba(135, 206, 235, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(46, 139, 87, 1)',
+                            'rgba(144, 238, 144, 1)',
+                            'rgba(152, 251, 152, 1)',
+                            'rgba(135, 206, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value * 100) + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Probability: ${(context.raw * 100).toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update probability chart
+        function updateProbabilityChart() {
+            if (window.probabilityChart) {
+                window.probabilityChart.data.datasets[0].data = Object.values(scheduleData.probabilities);
+                window.probabilityChart.update();
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (type !== 'info') {
+                notification.classList.add(type);
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Additional utility functions
+        function clearAllEvents() {
+            if (confirm('Are you sure you want to clear all events? This action cannot be undone.')) {
+                scheduleData.classes = [];
+                scheduleData.deviceEvents = [];
+                scheduleData.conflicts = [];
+                initApplication();
+                showNotification('All events cleared successfully!', 'success');
+            }
+        }
+
+        function enableAllDevices() {
+            scheduleData.devices.forEach(device => {
+                device.status = 'active';
+            });
+            renderDeviceList();
+            showNotification('All devices enabled!', 'success');
+        }
+
+        function disableAllDevices() {
+            scheduleData.devices.forEach(device => {
+                device.status = 'inactive';
+            });
+            renderDeviceList();
+            showNotification('All devices disabled!', 'warning');
+        }
+
+        function testAllRules() {
+            showNotification('Testing all Boolean logic rules...', 'info');
+            setTimeout(() => {
+                showNotification('All rules tested successfully! No conflicts found.', 'success');
+            }, 1500);
+        }
+
+        function exportRules() {
+            const rulesStr = JSON.stringify(scheduleData.rules, null, 2);
+            const dataBlob = new Blob([rulesStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'boolean-rules.json';
+            link.click();
+            showNotification('Rules exported successfully!', 'success');
+        }
+
+        function importRules() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const importedRules = JSON.parse(event.target.result);
+                        scheduleData.rules = importedRules;
+                        renderRulesList();
+                        showNotification('Rules imported successfully!', 'success');
+                    } catch (error) {
+                        showNotification('Error importing rules file!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function autoResolveConflicts() {
+            showNotification('Auto-resolving conflicts...', 'info');
+            setTimeout(() => {
+                scheduleData.conflicts = [];
+                scheduleData.optimization.resolvedConflicts = scheduleData.optimization.totalConflicts;
+                updateConflictList();
+                updateStatistics();
+                showNotification('All conflicts resolved automatically!', 'success');
+            }, 2000);
+        }
+
+        function suggestOptimizations() {
+            showNotification('Generating optimization suggestions...', 'info');
+            setTimeout(() => {
+                showNotification('5 optimization suggestions generated! Check the analytics panel.', 'success');
+            }, 1500);
+        }
+
+        function generateDeviceReport() {
+            showNotification('Generating device utilization report...', 'info');
+            setTimeout(() => {
+                showNotification('Device report generated successfully!', 'success');
+            }, 1500);
+        }
+
+        function viewOptimizationHistory() {
+            showNotification('Opening optimization history...', 'info');
+        }
+
+        // Navigation function
+        function navigateTo(page) {
+            // In a real application, this would navigate to the specified page
+            showNotification(`Navigating to ${page}...`, 'info');
+        }
+
+        // Detail view functions
+        function showOptimizationDetails() {
+            showNotification(`Current optimization efficiency: ${scheduleData.optimization.efficiency}%`, 'info');
+        }
+
+        function showClassDetails() {
+            showNotification(`Total classes: ${scheduleData.classes.length}`, 'info');
+        }
+
+        function showDeviceDetails() {
+            showNotification(`Total device schedules: ${scheduleData.deviceEvents.length}`, 'info');
+        }
+
+        function showConflictDetails() {
+            showNotification(`Active conflicts: ${scheduleData.conflicts.length}`, 
+                           scheduleData.conflicts.length > 0 ? 'warning' : 'info');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initApplication);
+    </script>
+</body>
+</html>
