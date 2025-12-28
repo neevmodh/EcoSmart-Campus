@@ -1,7 +1,24 @@
-# EcoSmart-Campus
-Optimize Campus Energy Consumption with Mathematical Intelligence Our advanced system uses Discrete Mathematics models to predict, monitor, and optimize electricity usage across your campus, reducing costs and environmental impact.
+# 🌱 EcoSmart Campus  
+### Optimizing Campus Energy with Mathematical Intelligence  
+**A Smart Energy Optimization Platform Powered by Discrete Mathematics**
 
-Each mathematical model (probability, recurrence, Boolean logic, graph theory) is mapped to its own interactive tool for modular scalability.
+---
+
+<p align="left">
+  <img src="https://img.shields.io/badge/Status-Prototype%20Ready-success?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Focus-Energy%20Optimization-brightgreen?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Math-Discrete%20Models-purple?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS-orange?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Backend-Node.js-green?style=for-the-badge&logo=node.js"/>
+  <img src="https://img.shields.io/badge/Visualization-D3.js%20%7C%20Chart.js-blue?style=for-the-badge"/>
+</p>
+
+---
+
+### 💡 Why EcoSmart Campus?
+> A unified platform that **predicts, monitors, and optimizes campus electricity usage**  
+> using **probability, graph theory, recurrence relations, and Boolean logic** —  
+> turning mathematical theory into **real-world sustainability**.
 
 ---
 
