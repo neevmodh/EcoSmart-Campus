@@ -27,7 +27,7 @@
 | Page | Name | Description |
 |------|------|-------------|
 | **1** | 🏠 Homepage (`index.html`) | System overview, live stats, and quick navigation |
-| **2** | 📊 Dashboard (`dashboard.html`) | Central monitoring of energy metrics and alerts |
+| **2** | 📊 Dashboard (`dashboard.html`) | Central monitoring of energy metrics and alert |
 | **3** | 🏗️ Campus Layout (`campus-layout.html`) | Graph visualization `G=(V,E)` for rooms and wiring |
 | **4** | ⏰ Schedule Optimizer (`schedules.html`) | Timetable integration and automation |
 | **5** | 📈 Energy Analytics (`analytics.html`) | Deep insights, forecasts, and historical trends |
